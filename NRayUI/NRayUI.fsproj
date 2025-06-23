@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Field.fs" />
+        <Compile Include="Positioning.fs" />
+        <Compile Include="Scanner.fs" />
+        <Compile Include="Modifier.fs" />
+        <Compile Include="Components\Console.fs" />
+        <Compile Include="Elements\Elem.fs" />
+        <Compile Include="Elements\Panels.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FSharpPlus" Version="1.7.0" />
+      <PackageReference Include="Raylib-CSharp" Version="5.0.0" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "NRayUI", "NRayUI\NRayUI.fsproj", "{B2FAC328-429F-484A-9F64-07B5E9B998C2}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "NRayUI.Tests", "NRayUI.Tests\NRayUI.Tests.fsproj", "{C6557239-924D-47BD-854C-4A6A16B6E7AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B2FAC328-429F-484A-9F64-07B5E9B998C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2FAC328-429F-484A-9F64-07B5E9B998C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2FAC328-429F-484A-9F64-07B5E9B998C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2FAC328-429F-484A-9F64-07B5E9B998C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6557239-924D-47BD-854C-4A6A16B6E7AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6557239-924D-47BD-854C-4A6A16B6E7AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6557239-924D-47BD-854C-4A6A16B6E7AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6557239-924D-47BD-854C-4A6A16B6E7AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
