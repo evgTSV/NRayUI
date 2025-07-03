@@ -2,17 +2,24 @@
 
 type Sides = {
     Top: float32
+    Right: float32
     Bottom: float32
     Left: float32
-    Right: float32
+}
+
+type Corners = {
+    TopLeft: float32
+    TopRight: float32
+    BottomRight: float32
+    BottomLeft: float32
 }
 
 [<Struct>]
 type Position =
-    | Static of float32 * float32
-    | Relative of float32 * float32
-    | Absolute of float32 * float32
-    | Fixed of float32 * float32
+    | Static
+    | Relative
+    | Absolute
+    | Fixed
 
 module Alignment =
     [<Struct>]
@@ -61,12 +68,7 @@ module Alignment =
     let CustomAlignment v h =
         { Vertical = Vertical.Custom v; Horizontal = Horizontal.Custom h }
 
-[<Struct>]
-type Offset = {
-    X: float32
-    Y: float32
-}
-
+type Offset = Sides
 type Margin = Sides
 type Padding = Sides
 
@@ -77,11 +79,12 @@ let createSides v = {
     Right = v
 }
 
-let createCustomSides top bottom left right = {
-    Top = top
-    Bottom = bottom
-    Left = left
-    Right = right
+let createCorners v = {
+    TopLeft = v
+    TopRight = v
+    BottomRight = v
+    BottomLeft = v
 }
 
 let zeroSides = createSides 0.0f
+let zeroCorners = createCorners 0.0f
