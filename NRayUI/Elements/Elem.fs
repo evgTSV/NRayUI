@@ -27,12 +27,16 @@ module Elem =
         interface IElem with
             member this.Render(point: Vector2) =
                 let rec_ = this.Layout.GetRec(point)
-                DrawRectangleRec(rec_, this.BackgroundColor)
+                DrawRectangleCustomRounded
+                    rec_
+                    this.CornerRadius
+                    Constants.DefaultSmoothCircleSegments
+                    this.BackgroundColor
                 DrawRectangleCustomRoundedLines 
                     rec_
                     this.CornerRadius
                     this.BorderWidth
-                    10
+                    Constants.DefaultSmoothCircleSegments
                     this.BorderColor
 
             member this.Update() = this
