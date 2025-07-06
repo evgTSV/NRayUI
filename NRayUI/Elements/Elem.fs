@@ -23,6 +23,7 @@ module Elem =
         BorderColor: Color
         BorderWidth: float32
         CornerRadius: Corners
+        Smoothness: int
     } with    
         interface IElem with
             member this.Render(point: Vector2) =
@@ -30,13 +31,13 @@ module Elem =
                 DrawRectangleCustomRounded
                     rec_
                     this.CornerRadius
-                    Constants.DefaultSmoothCircleSegments
+                    this.Smoothness
                     this.BackgroundColor
                 DrawRectangleCustomRoundedLines 
                     rec_
                     this.CornerRadius
                     this.BorderWidth
-                    Constants.DefaultSmoothCircleSegments
+                    this.Smoothness
                     this.BorderColor
 
             member this.Update() = this
@@ -51,7 +52,8 @@ module Elem =
               BackgroundColor = Color.White
               BorderColor = Color.Black
               BorderWidth = 1.0f
-              CornerRadius = createCorners 0f }
+              CornerRadius = createCorners 0f
+              Smoothness = Constants.DefaultSmoothCircleSegments }
             
         static member Default =
             Box.DefaultLazy.Force()
@@ -119,6 +121,12 @@ module Elem =
             let innerLens =
                 (fun (x: Box) -> x.CornerRadius.BottomLeft),
                 (fun (v: float32) (x: Box) -> { x with CornerRadius.BottomLeft = v })
+            boxLens >-> innerLens
+            
+        let smoothness<'a when 'a :> IWithBox<'a>> : Lens<'a, int> =
+            let innerLens =
+                (fun (x: Box) -> x.Smoothness),
+                (fun (v: int) (x: Box) -> { x with Smoothness = v })
             boxLens >-> innerLens
             
     type Div = {

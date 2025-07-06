@@ -112,6 +112,10 @@ module BoxSet =
     let crScan (input: string) =
         let corners = Scanner.scanCornersInput input
         cornerRadius corners
+        
+    /// Sets the smoothness of the rect corners.
+    let smoothness (smoothness: int) =
+        (BoxLenses.smoothness, smoothness) ||> Optic.set
    
 [<RequireQualifiedAccess>]     
 module StackPanelSet =
