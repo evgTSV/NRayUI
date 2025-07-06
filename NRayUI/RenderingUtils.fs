@@ -57,6 +57,11 @@ let DrawRectanglePoly
     let texCoords = Array.init pointCount (fun i -> Vector2(float32 i / float32 (pointCount - 1), 0.5f))
     DrawTexturePoly (Texture2D()) center pointCoords texCoords tint
     
+let ExtendLine (startPt: Vector2) (endPt: Vector2) (thickness: float32) =
+    let dir = Vector2.Normalize(endPt - startPt)
+    let extension = dir * (thickness / 4f)
+    startPt - extension, endPt + extension
+    
 let DrawCircleSectorLinesEx (center: Vector2) (radius: float32) (startAngle: float32) (endAngle: float32) (segments: int) (thickness: float32) (color: Color) =
     let segments =
         if segments < 4 then
@@ -75,7 +80,9 @@ let DrawCircleSectorLinesEx (center: Vector2) (radius: float32) (startAngle: flo
                     center.X + MathF.Cos(rad) * radius,
                     center.Y + MathF.Sin(rad) * radius))
             
-        DrawLineEx(line[0], line[1], thickness, color)
+        let extendedLine = ExtendLine line[0] line[1] thickness
+            
+        DrawLineEx(fst extendedLine, snd extendedLine, thickness, color)
 
 let DrawRectangleCustomRounded
     (rec_: Transformations.Rectangle) 
@@ -98,23 +105,36 @@ let DrawRectangleCustomRoundedLines
     let width = rec_.Width
     let height = rec_.Height
     
-    let rTopLeft = Math.Clamp(roundness.TopLeft, 0f, 1f) * Math.Min(width, height) / 2f
-    let rTopRight = Math.Clamp(roundness.TopRight, 0f, 1f) * Math.Min(width, height) / 2f
-    let rBottomRight = Math.Clamp(roundness.BottomRight, 0f, 1f) * Math.Min(width, height) / 2f
-    let rBottomLeft = Math.Clamp(roundness.BottomLeft, 0f, 1f) * Math.Min(width, height) / 2f
+    let getRadius (corner: float32) =
+        Math.Clamp(corner, 0f, 1f) * Math.Min(width, height) / 2f
+    
+    let radii = 
+        { TopLeft = roundness.TopLeft |> getRadius
+          TopRight = roundness.TopRight |> getRadius
+          BottomRight = roundness.BottomRight |> getRadius
+          BottomLeft = roundness.BottomLeft |> getRadius }
+    
+    let getLineExtension (corner: float32) =
+        if corner = 0.0f then thickness / 2.0f else 0.0f
+    
+    let lineExtension =
+        { TopLeft = roundness.TopLeft |> getLineExtension
+          TopRight = roundness.TopRight |> getLineExtension
+          BottomRight = roundness.BottomRight |> getLineExtension
+          BottomLeft = roundness.BottomLeft |> getLineExtension }
     
     let topLine =
-        (Vector2(point.X + rTopLeft, point.Y),
-        Vector2(point.X + width - rTopRight, point.Y))
+        (Vector2(point.X + radii.TopLeft - lineExtension.TopLeft, point.Y),
+        Vector2(point.X + width - radii.TopRight + lineExtension.TopRight, point.Y))
     let bottomLine = (
-        Vector2(point.X + rBottomLeft, point.Y + height),
-        Vector2(point.X + width - rBottomRight, point.Y + height))
+        Vector2(point.X + radii.BottomLeft - lineExtension.BottomLeft, point.Y + height),
+        Vector2(point.X + width - radii.BottomRight + lineExtension.BottomRight, point.Y + height))
     let leftLine = (
-        Vector2(point.X, point.Y + rTopLeft),
-        Vector2(point.X, point.Y + height - rBottomLeft))
+        Vector2(point.X, point.Y + radii.TopLeft - lineExtension.TopLeft),
+        Vector2(point.X, point.Y + height - radii.BottomLeft + lineExtension.BottomLeft))
     let rightLine = (
-        Vector2(point.X + width, point.Y + rTopRight),
-        Vector2(point.X + width, point.Y + height - rBottomRight))
+        Vector2(point.X + width, point.Y + radii.TopRight - lineExtension.TopRight),
+        Vector2(point.X + width, point.Y + height - radii.BottomRight + lineExtension.BottomRight))
     
     [| topLine; bottomLine; leftLine; rightLine |]
     |> Array.iter (fun (start, end_) ->
@@ -122,10 +142,10 @@ let DrawRectangleCustomRoundedLines
     )
     
     [|
-        (Vector2(point.X + rTopLeft, point.Y + rTopLeft), rTopLeft, 180.0f, 270.0f)
-        (Vector2(point.X + width - rTopRight, point.Y + rTopRight), rTopRight, 270.0f, 360.0f)
-        (Vector2(point.X + width - rBottomRight, point.Y + height - rBottomRight), rBottomRight, 0.0f, 90.0f)
-        (Vector2(point.X + rBottomLeft, point.Y + height - rBottomLeft), rBottomLeft, 90.0f, 180.0f)
+        (Vector2(point.X + radii.TopLeft, point.Y + radii.TopLeft), radii.TopLeft, 180.0f, 270.0f)
+        (Vector2(point.X + width - radii.TopRight, point.Y + radii.TopRight), radii.TopRight, 270.0f, 360.0f)
+        (Vector2(point.X + width - radii.BottomRight, point.Y + height - radii.BottomRight), radii.BottomRight, 0.0f, 90.0f)
+        (Vector2(point.X + radii.BottomLeft, point.Y + height - radii.BottomLeft), radii.BottomLeft, 90.0f, 180.0f)
     |] 
     |> Array.iter (fun (center, radius, startAngle, endAngle) ->
         if radius > 0.0f then
