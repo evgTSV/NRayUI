@@ -64,7 +64,7 @@ let rec DrawCircleSectorLinesEx (center: Vector2) (radius: float32) (startAngle:
         if segments < 0 then 4
         elif segments < 4 then
             let th = MathF.Acos(2f * (MathF.Pow(1f - Constants.SmoothCircleErrorRate / radius, 2f) - 1f))
-            MathF.Ceiling(2f * MathF.PI / th) / 2f |> int
+            MathF.Ceiling((endAngle - startAngle) / th) |> int
         else segments
         
     let innerRadius = radius

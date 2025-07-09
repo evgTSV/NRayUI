@@ -4,4 +4,4 @@
 let SmoothCircleErrorRate = 0.5f
 
 [<Literal>]
-let DefaultSmoothCircleSegments = 10
+let DefaultSmoothCircleSegments = 3
