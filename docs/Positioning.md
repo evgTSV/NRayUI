@@ -11,37 +11,17 @@ NRayUI provides four types of element positioning, similar to CSS:
 
 Elements with `Static` positioning are placed in the document flow one after another, with no offsets. This is the default behavior for all elements unless specified otherwise.
 
-**Example:**
-```fsharp
-Element.create() |> withModifiers [ position Static ]
-```
-
 ## Relative
 
 An element with `Relative` positioning is positioned relative to its normal position in the flow. You can set offsets (`top`, `left`, `right`, `bottom`) that will be applied to its original position.
-
-**Example:**
-```fsharp
-Element.create() |> withModifiers [ position Relative; top 10; left 20 ]
-```
 
 ## Absolute
 
 An element with `Absolute` positioning is positioned relative to the nearest ancestor with a positioning other than `Static`. If there is no such ancestor, it is positioned relative to the window. Offsets (`top`, `left`, `right`, `bottom`) define its exact position.
 
-**Example:**
-```fsharp
-Element.create() |> withModifiers [ position Absolute; top 0; right 0 ]
-```
-
 ## Fixed
 
 An element with `Fixed` positioning is positioned relative to the application window (the entire scene), independent of scrolling or other elements. Use offsets to set its position.
-
-**Example:**
-```fsharp
-Element.create() |> withModifiers [ position Fixed; bottom 0; right 0 ]
-```
 
 ## Offset Properties
 
