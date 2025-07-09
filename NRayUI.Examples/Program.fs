@@ -22,9 +22,9 @@ let test =
         ]
         LayoutSet.height 500f >> LayoutSet.width 250f
         BoxSet.backgroundColor Color.Blue
-        BoxSet.borderWidth 50f
-        BoxSet.smoothness 10
-        BoxSet.cornerRadius { TopLeft = 0f; TopRight = 1.f; BottomLeft = 0f; BottomRight = 0.1f }
+        BoxSet.borderColor Color.DarkBlue
+        BoxSet.borderWidth 10f
+        BoxSet.cornerRadius { TopLeft = 0f; TopRight = 1.f; BottomLeft = 0.5f; BottomRight = 0.1f }
         StackPanelSet.orientation Orientation.Vertical
         StackPanelSet.children [
             Div.create [

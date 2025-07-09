@@ -6,11 +6,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Utils.fs" />
         <Compile Include="Constants.fs" />
         <Compile Include="Field.fs" />
         <Compile Include="Positioning.fs" />
         <Compile Include="Scanner.fs" />
         <Compile Include="Modifier.fs" />
+        <Compile Include="RlGlUtils.fs" />
         <Compile Include="RenderingUtils.fs" />
         <Compile Include="Elements\Elem.fs" />
         <Compile Include="Elements\Panels.fs" />
