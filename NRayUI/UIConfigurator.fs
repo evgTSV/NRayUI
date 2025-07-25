@@ -12,6 +12,7 @@ open NRayUI.Modifier
 open NRayUI.Positioning
 open NRayUI.Positioning.Alignment
 open Raylib_CSharp.Colors
+open Raylib_CSharp.Fonts
 
 [<RequireQualifiedAccess>]
 module LayoutSet =
@@ -119,19 +120,31 @@ module BoxSet =
         (BoxLenses.smoothness, smoothness) ||> Optic.set
 
 [<RequireQualifiedAccess>]
-module LabelSet =
+module TextSet =
     
-    /// Sets the text of a label.
-    let text (text: string) =
-        (LabelLenses.text, text) ||> Optic.set
+    /// Sets the content of a text.
+    let content (text: string) =
+        (TextLenses.content, text) ||> Optic.set
     
-    /// Sets the font of a label text.
+    /// Sets the font of a text.
     let fontSize (fontSize: float32) =
-        (LabelLenses.fontSize, fontSize) ||> Optic.set
+        (TextLenses.fontSize, fontSize) ||> Optic.set
     
-    /// Sets the color of a label text. 
+    /// Sets the color of a text. 
     let color (color: Color) =
-        (LabelLenses.color, color) ||> Optic.set
+        (TextLenses.color, color) ||> Optic.set
+        
+    /// Sets the font of a text.
+    let font (font: Font) =
+        (TextLenses.font, font) ||> Optic.set
+        
+    /// Sets the background color of a text.
+    let backgroundColor (color: Color) =
+        (TextLenses.backgroundColor, color) ||> Optic.set
+        
+    /// Sets the spacing of a text.
+    let spacing (spacing: float32) =
+        (TextLenses.spacing, spacing) ||> Optic.set
         
 [<RequireQualifiedAccess>]
 module PanelSet =

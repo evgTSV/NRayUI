@@ -1,6 +1,7 @@
 ﻿namespace NRayUI.Elements
 
 open System
+open System.Collections.Generic
 open System.Numerics
 open System.Threading
 open Aether
@@ -10,6 +11,7 @@ open NRayUI
 open NRayUI.Modifier
 open NRayUI.Positioning
 open NRayUI.RenderingUtils
+open NRayUI.Utils
 open Raylib_CSharp.Camera.Cam2D
 open Raylib_CSharp.Colors
 open Raylib_CSharp.Rendering
@@ -155,67 +157,100 @@ module Elem =
                 (fun (v: int) (x: Box) -> { x with Smoothness = v })
             boxLens >-> innerLens
             
-    type Label = {
-        Layout: Layout
-        Box: Box
-        Text: string
+    type Text = {
+        Content: string
+        Font: Font option
         FontSize: float32
         Color: Color
+        BackgroundColor: Color
+        Spacing: float32
     } with
+        member private this.GetFont() =
+            this.Font
+            |> Option.defaultValue (Font.GetDefault())
+            
+        member private this.CreateBoxMem =
+            lazyMemoize
+                (Vector2Comparer())
+                (fun (pos: Vector2) ->
+                    let textMeasure = MeasureTextEx(this.GetFont(), this.Content, this.FontSize, this.Spacing)
+                    let layout = createLayout pos textMeasure.X textMeasure.Y
+                    { Box.Default with
+                        Layout = layout
+                        BackgroundColor = this.BackgroundColor })      
+        
         interface IElem with
             member this.Render(context) =
                 let pos = context.CurrentPosition
-                (this.Box :> IElem).Render(context)
-                DrawTextEx(Font.GetDefault(), this.Text, pos, this.FontSize, 1f, this.Color)
-                
+                let box = this.CreateBoxMem pos
+                (box :> IElem).Render(context)
+                DrawTextEx(this.GetFont(), this.Content, pos, this.FontSize, this.Spacing, this.Color)
 
             member this.Update(_) = this
             
-        interface ILayoutProvider with
-            member this.GetLayout = this.Layout
-            
-        interface IWithLayout<Label> with
-            member this.SetLayout(layout) = { this with Layout = layout }
-            
-        interface IBoxProvider with
-            member this.GetBox = this.Box
-            
-        interface IWithBox<Label> with
-            member this.SetBox(box) = { this with Box = box }
-            
         static member private DefaultLazy =
-            let text = "Label default"
-            let size = 20.0f
-            let textMeasure =
-                MeasureTextEx(Font.GetDefault(), text, size, 1f)
             lazy {
-              Layout = createLayout (Vector2(0f, 0f)) 
-                                    textMeasure.X
-                                    textMeasure.Y
-              Box = Box.Default
-              Text = "Label default"
+              Content = "Some text"
+              Font = None
               FontSize = 20.0f
-              Color = Color.Black }
+              Color = Color.Black
+              BackgroundColor = Color.Blank
+              Spacing = 1.0f }
             
         static member Default =
-            Label.DefaultLazy.Force()
-           
-    [<RequireQualifiedAccess>] 
-    module Label =
-        let create (attributes: (Label -> Label) list) : Label =
-            attributes |> List.fold (fun acc attr -> attr acc) Label.Default
+            Text.DefaultLazy.Force()
+    
+    [<Interface>]
+    type ITextProvider =
+        abstract member GetText: Text
+    
+    [<Interface>]
+    type IWithText<'a> =
+        inherit ITextProvider
+        abstract member SetText: Text -> 'a
     
     [<RequireQualifiedAccess>]         
-    module LabelLenses =
+    module TextLenses =
         
-        let text : Lens<Label, string> =
-            (fun (x: Label) -> x.Text),
-            (fun (text: string) (x: Label) -> { x with Text = text })
+        let textLens<'a when 'a :> IWithText<'a>> =
+            (fun (x: 'a) -> x.GetText), (fun (v: Text) (x: 'a) -> x.SetText v)
+    
+        let content<'a when 'a :> IWithText<'a>> : Lens<'a, string> =
+            let innerLens =
+                (fun (x: Text) -> x.Content),
+                (fun (content: string) (x: Text) -> { x with Content = content })
+            textLens >-> innerLens
             
-        let fontSize : Lens<Label, float32> =
-            (fun (x: Label) -> x.FontSize),
-            (fun (fontSize: float32) (x: Label) -> { x with FontSize = fontSize })
+        let fontSize<'a when 'a :> IWithText<'a>> : Lens<'a, float32> =
+            let innerLens =
+                (fun (x: Text) -> x.FontSize),
+                (fun (fontSize: float32) (x: Text) -> { x with FontSize = fontSize })
+            textLens >-> innerLens
             
-        let color : Lens<Label, Color> =
-            (fun (x: Label) -> x.Color),
-            (fun (color: Color) (x: Label) -> { x with Color = color })
+        let color<'a when 'a :> IWithText<'a>> : Lens<'a, Color> =
+            let innerLens  =  
+                (fun (x: Text) -> x.Color),
+                (fun (color: Color) (x: Text) -> { x with Color = color })
+            textLens >-> innerLens
+            
+        let font<'a when 'a :> IWithText<'a>> : Prism<'a, Font> =
+            let innerLens =
+                (fun (x: Text) -> x.Font),
+                (fun (font: Font) (x: Text) -> { x with Font = Some font })
+            textLens >-> innerLens
+            
+        let spacing<'a when 'a :> IWithText<'a>> : Lens<'a, float32> =
+            let innerLens =
+                (fun (x: Text) -> x.Spacing),
+                (fun (spacing: float32) (x: Text) -> { x with Spacing = spacing })
+            textLens >-> innerLens
+            
+        let backgroundColor<'a when 'a :> IWithText<'a>> : Lens<'a, Color> =
+            let innerLens =
+                (fun (x: Text) -> x.BackgroundColor),
+                (fun (color: Color) (x: Text) -> { x with BackgroundColor = color })
+            textLens >-> innerLens
+            
+    module Text =
+        let create (attributes: (Text -> Text) list) : Text =
+            attributes |> List.fold (fun acc attr -> attr acc) Text.Default

@@ -8,6 +8,7 @@ open NRayUI.Field
 open NRayUI.Modifier
 open NRayUI.Positioning
 open Raylib_CSharp.Transformations
+open type Raylib_CSharp.Rendering.Graphics
 
 module Panels =
     type IPanel<'a> =
@@ -29,6 +30,8 @@ module Panels =
                 (this.Box :> IElem).Render(context)
                 
                 let pos = context.CurrentPosition
+
+                BeginScissorMode(int pos.X, int pos.Y, int this.Box.Layout.Width, int this.Box.Layout.Height)   
                 this.Children
                 |> List.iter (fun child ->
                     match child with
@@ -41,6 +44,7 @@ module Panels =
                         child.Render(childContext)
                     | _ ->
                         child.Render(context))
+                EndScissorMode()
 
             member this.Update(context) =
                 { this with
@@ -98,9 +102,10 @@ module Panels =
                 for i in 0 .. this.Children.Length - 1 do
                     let child = this.Children[i]
                     match child with
-                    | :? IWithLayout<Layout> as withLayout ->
+                    | :? ILayoutProvider as withLayout ->
                         let childLayout = withLayout.GetLayout
-                        let childPos = pos + childLayout.Position
+                        let childPos = pos + (Vector2(childLayout.Margin.Left, childLayout.Margin.Top) * Vector2(float32 i)) +
+                                        Vector2(this.Box.Layout.Padding.Left, this.Box.Layout.Padding.Top)
                         let childContext = 
                             { context with
                                 CurrentPosition = childPos }

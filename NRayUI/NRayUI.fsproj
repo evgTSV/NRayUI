@@ -18,6 +18,7 @@
         <Compile Include="RlGlUtils.fs" />
         <Compile Include="RenderingUtils.fs" />
         <Compile Include="Elements\Elem.fs" />
+        <Compile Include="Elements\Label.fs" />
         <Compile Include="Elements\Panels.fs" />
         <Compile Include="UIConfigurator.fs" />
         <Compile Include="UIRendering.fs" />
