@@ -23,16 +23,6 @@ module Modifier =
         static member WithModifiers (modifiers: (Layout -> Layout) List) (layout: Layout) : Layout =
             modifiers
             |> List.fold (fun acc modifier -> modifier acc) layout
-            
-        member this.DefineCoords (coords: Vector2) : PositionedLayout = {
-            Layout = this
-            Coords = coords
-        }
-            
-    and PositionedLayout = {
-        Layout: Layout
-        Coords: Vector2
-    }
     
     [<Interface>]
     type ILayoutProvider =
