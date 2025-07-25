@@ -1,5 +1,6 @@
 ﻿module NRayUI.Components.UIConfigurator
 
+open System.Numerics
 open System.Runtime.InteropServices
 open Aether
 open NRayUI
@@ -19,6 +20,10 @@ module LayoutSet =
     let modifiers (modifiers: (Layout -> Layout) list) (x: #IWithLayout<'a>) =
         let layout = x.GetLayout
         x.SetLayout (Layout.WithModifiers modifiers layout)
+        
+    /// Sets the position of a layout.
+    let position (position: Vector2) =
+        (LayoutLenses.position, position) ||> Optic.set
     
     /// Sets the width of a layout.
     let width (width: float32) =
@@ -48,10 +53,6 @@ module LayoutSet =
     /// Sets the offset of a layout.
     let offset (offset: Offset) =
         (LayoutLenses.offset, offset) ||> Optic.set
-    
-    /// Sets the position of a layout.
-    let position (position: Position) =
-        (LayoutLenses.position, position) ||> Optic.set
     
     /// Sets the zIndex of a layout.
     let zIndex (zIndex: int) =
@@ -116,14 +117,32 @@ module BoxSet =
     /// Sets the smoothness of the rect corners.
     let smoothness (smoothness: int) =
         (BoxLenses.smoothness, smoothness) ||> Optic.set
+
+[<RequireQualifiedAccess>]
+module LabelSet =
+    
+    /// Sets the text of a label.
+    let text (text: string) =
+        (LabelLenses.text, text) ||> Optic.set
+    
+    /// Sets the font of a label text.
+    let fontSize (fontSize: float32) =
+        (LabelLenses.fontSize, fontSize) ||> Optic.set
+    
+    /// Sets the color of a label text. 
+    let color (color: Color) =
+        (LabelLenses.color, color) ||> Optic.set
+        
+[<RequireQualifiedAccess>]
+module PanelSet =
+    
+    /// Sets children to a Panel.
+    let children (children: IElem List) (panel: IPanel<'a>) =
+            panel.SetChildren children
    
 [<RequireQualifiedAccess>]     
 module StackPanelSet =
     
-    /// Adds children to a StackPanel.
-    let children (children: IElem List) (panel: StackPanel) =
-            { panel with Children = children }
-
     /// Sets the orientation of a StackPanel.
     let orientation (orientation: Orientation) (panel: StackPanel) =
         { panel with Orientation = orientation }

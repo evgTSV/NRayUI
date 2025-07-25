@@ -1,19 +1,38 @@
 ﻿namespace NRayUI.Elements
 
+open System
 open System.Numerics
+open System.Threading
 open Aether
 open Aether.Operators
+open Microsoft.Extensions.DependencyInjection
 open NRayUI
 open NRayUI.Modifier
 open NRayUI.Positioning
 open NRayUI.RenderingUtils
+open Raylib_CSharp.Camera.Cam2D
 open Raylib_CSharp.Colors
+open Raylib_CSharp.Rendering
 open type Raylib_CSharp.Rendering.Graphics
+open type Raylib_CSharp.Fonts.TextManager
+open Raylib_CSharp.Fonts
+open Raylib_CSharp.Transformations
 
 [<Interface>]
 type IElem =
-    abstract member Render: point: Vector2 -> unit
-    abstract member Update: unit -> IElem
+    abstract member Render: RenderingContext -> unit
+    abstract member Update: UpdateContext -> IElem
+and RenderingContext = {
+    Camera: Camera2D
+    RenderTargetSize: Vector2
+    CurrentPosition: Vector2
+    ClipRegion: Rectangle option
+    IsDebugMode: bool
+    Services: ServiceProvider
+}
+and UpdateContext = {
+    Event: EventHandler // TODO: Implement event system
+}
 
 module Elem =
    
@@ -24,10 +43,11 @@ module Elem =
         BorderWidth: float32
         CornerRadius: Corners
         Smoothness: int
-    } with    
+    } with
         interface IElem with
-            member this.Render(point: Vector2) =
-                let rec_ = this.Layout.GetRec(point)
+            member this.Render(context) =
+                let pos = context.CurrentPosition
+                let rec_ = Rectangle(pos.X, pos.Y, this.Layout.Width, this.Layout.Height)
                 DrawRectangleCustomRounded
                     rec_
                     this.CornerRadius
@@ -40,15 +60,17 @@ module Elem =
                     this.Smoothness
                     this.BorderColor
 
-            member this.Update() = this
+            member this.Update(_) = this
+            
+        interface ILayoutProvider with
+            member this.GetLayout = this.Layout
             
         interface IWithLayout<Box> with
-            member this.GetLayout = this.Layout
             member this.SetLayout(layout) = { this with Layout = layout }
             
         static member private DefaultLazy =
             lazy {
-              Layout = createLayout 100.0f 100.0f
+              Layout = createLayout (Vector2(0f, 0f)) 100.0f 100.0f
               BackgroundColor = Color.White
               BorderColor = Color.Black
               BorderWidth = 1.0f
@@ -59,8 +81,12 @@ module Elem =
             Box.DefaultLazy.Force()
     
     [<Interface>]
-    type IWithBox<'a> =
+    type IBoxProvider =
         abstract member GetBox: Box
+    
+    [<Interface>]
+    type IWithBox<'a> =
+        inherit IBoxProvider
         abstract member SetBox: Box -> 'a
         
     [<RequireQualifiedAccess>]
@@ -129,37 +155,67 @@ module Elem =
                 (fun (v: int) (x: Box) -> { x with Smoothness = v })
             boxLens >-> innerLens
             
-    type Div = {
+    type Label = {
+        Layout: Layout
         Box: Box
-        Children: IElem list
+        Text: string
+        FontSize: float32
+        Color: Color
     } with
         interface IElem with
-            member this.Render(point: Vector2) =
-                (this.Box :> IElem).Render(point)
-                // TODO: Render children
+            member this.Render(context) =
+                let pos = context.CurrentPosition
+                (this.Box :> IElem).Render(context)
+                DrawTextEx(Font.GetDefault(), this.Text, pos, this.FontSize, 1f, this.Color)
                 
-            member this.Update() =
-                { this with Children = this.Children |> List.map _.Update() }
-                
-        interface IWithLayout<Div> with
-            member this.GetLayout = this.Box.Layout
-            member this.SetLayout(layout) = { this with Box = { this.Box with Layout = layout } }
+
+            member this.Update(_) = this
             
-        interface IWithBox<Div> with
+        interface ILayoutProvider with
+            member this.GetLayout = this.Layout
+            
+        interface IWithLayout<Label> with
+            member this.SetLayout(layout) = { this with Layout = layout }
+            
+        interface IBoxProvider with
             member this.GetBox = this.Box
+            
+        interface IWithBox<Label> with
             member this.SetBox(box) = { this with Box = box }
             
         static member private DefaultLazy =
-            lazy (
-              let box = Box.Default
-              { Box = box; Children = [] }
-            )
+            let text = "Label default"
+            let size = 20.0f
+            let textMeasure =
+                MeasureTextEx(Font.GetDefault(), text, size, 1f)
+            lazy {
+              Layout = createLayout (Vector2(0f, 0f)) 
+                                    textMeasure.X
+                                    textMeasure.Y
+              Box = Box.Default
+              Text = "Label default"
+              FontSize = 20.0f
+              Color = Color.Black }
             
         static member Default =
-            Div.DefaultLazy.Force()
-            
-    [<RequireQualifiedAccess>]
-    module Div =
+            Label.DefaultLazy.Force()
+           
+    [<RequireQualifiedAccess>] 
+    module Label =
+        let create (attributes: (Label -> Label) list) : Label =
+            attributes |> List.fold (fun acc attr -> attr acc) Label.Default
+    
+    [<RequireQualifiedAccess>]         
+    module LabelLenses =
         
-        let create (attributes: (Div -> Div) list) : Div =
-            attributes |> List.fold (fun acc attr -> attr acc) Div.Default
+        let text : Lens<Label, string> =
+            (fun (x: Label) -> x.Text),
+            (fun (text: string) (x: Label) -> { x with Text = text })
+            
+        let fontSize : Lens<Label, float32> =
+            (fun (x: Label) -> x.FontSize),
+            (fun (fontSize: float32) (x: Label) -> { x with FontSize = fontSize })
+            
+        let color : Lens<Label, Color> =
+            (fun (x: Label) -> x.Color),
+            (fun (color: Color) (x: Label) -> { x with Color = color })

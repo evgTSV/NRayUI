@@ -14,13 +14,6 @@ type Corners = {
     BottomLeft: float32
 }
 
-[<Struct>]
-type Position =
-    | Static
-    | Relative
-    | Absolute
-    | Fixed
-
 module Alignment =
     [<Struct>]
     type Vertical =

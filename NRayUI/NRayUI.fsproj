@@ -9,9 +9,12 @@
         <Compile Include="Utils.fs" />
         <Compile Include="Constants.fs" />
         <Compile Include="Field.fs" />
+        <Compile Include="Icons.fs" />
         <Compile Include="Positioning.fs" />
         <Compile Include="Scanner.fs" />
         <Compile Include="Modifier.fs" />
+        <Compile Include="Window.fs" />
+        <Compile Include="Camera.fs" />
         <Compile Include="RlGlUtils.fs" />
         <Compile Include="RenderingUtils.fs" />
         <Compile Include="Elements\Elem.fs" />
@@ -22,6 +25,7 @@
 
     <ItemGroup>
       <PackageReference Include="Aether" Version="8.3.1" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
       <PackageReference Include="Raylib-CSharp" Version="5.0.0" />
     </ItemGroup>
 

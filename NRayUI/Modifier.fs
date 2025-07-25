@@ -11,39 +11,54 @@ open Alignment
 module Modifier =
     
     type Layout = {
+        Position: Vector2
         Width: float32
         Height: float32
         Margin: Margin
         Padding: Padding
         Offset: Offset
         Alignment: Alignment option
-        Position: Position
         ZIndex: int
     } with
         static member WithModifiers (modifiers: (Layout -> Layout) List) (layout: Layout) : Layout =
             modifiers
             |> List.fold (fun acc modifier -> modifier acc) layout
-        member this.GetRec(point: Vector2) =
-            Transformations.Rectangle(point.X, point.Y, this.Width, this.Height)
+            
+        member this.DefineCoords (coords: Vector2) : PositionedLayout = {
+            Layout = this
+            Coords = coords
+        }
+            
+    and PositionedLayout = {
+        Layout: Layout
+        Coords: Vector2
+    }
+    
+    [<Interface>]
+    type ILayoutProvider =
+        abstract member GetLayout: Layout
          
     [<Interface>]   
     type IWithLayout<'a> =
-        abstract member GetLayout: Layout
+        inherit ILayoutProvider
         abstract member SetLayout: Layout -> 'a
     
-    let createLayout width height = {
+    let createLayout pos width height = {
+        Position = pos
         Width = width
         Height = height
         Alignment = None
         Margin = zeroSides
         Padding = zeroSides
         Offset = zeroSides
-        Position = Static
         ZIndex = 0
     }
      
     let withModifiers (modifiers: (Layout -> Layout) list) (layout: Layout) : Layout =
         Layout.WithModifiers modifiers layout
+    
+    let position (v: Vector2) (layout: Layout) : Layout =   
+        { layout with Position = v }
     
     let width (v: float32) (layout: Layout) : Layout =   
         { layout with Width = v }
@@ -83,18 +98,15 @@ module Modifier =
     let right (value: float32) (layout: Layout) : Layout =
         { layout with Layout.Offset.Right = value }
         
-    let position (position: Position) (layout: Layout) : Layout =
-        { layout with Position = position }
-        
     let zIndex (zIndex: int) (layout: Layout) : Layout =
         { layout with ZIndex = zIndex }
         
     let private windowLayoutLazy =
         lazy (createLayout
-                (float32 (Windowing.Window.GetScreenWidth()))
-                (float32 (Windowing.Window.GetScreenHeight()))
-                |> withModifiers [
-                    position Relative
+                    (Vector2(0f, 0f))
+                    (float32 (Windowing.Window.GetScreenWidth()))
+                    (float32 (Windowing.Window.GetScreenHeight())
+                ) |> withModifiers [
                     zIndex -1
                 ])
     
@@ -108,6 +120,10 @@ module Modifier =
         let private layoutLens<'a when 'a :> IWithLayout<'a>> =
             (fun (x: 'a) -> x.GetLayout), (fun (v: Layout) (x: 'a) -> x.SetLayout v)
         
+        let position<'a when 'a :> IWithLayout<'a>> : Lens<'a, Vector2> = 
+            let innerLens = _.Position, position
+            layoutLens >-> innerLens
+        
         let width<'a when 'a :> IWithLayout<'a>> : Lens<'a, float32> = 
             let innerLens = _.Width, width
             layoutLens >-> innerLens
@@ -117,8 +133,8 @@ module Modifier =
             layoutLens >-> innerLens
         
         let alignment<'a when 'a :> IWithLayout<'a>> : Prism<'a, Alignment> =
-            let innerLens = _.Alignment, align
-            layoutLens >-> innerLens
+            let innerPrism = _.Alignment, align
+            layoutLens >-> innerPrism
             
         let margin<'a when 'a :> IWithLayout<'a>> : Lens<'a, Margin> =
             let innerLens = _.Margin, margin
@@ -148,11 +164,6 @@ module Modifier =
             let innerLens = _.Offset.Right, right
             layoutLens >-> innerLens
 
-        let position<'a when 'a :> IWithLayout<'a>> : Lens<'a, Position> =
-            let innerLens = _.Position, position
-            layoutLens >-> innerLens
-
         let zIndex<'a when 'a :> IWithLayout<'a>> : Lens<'a, int> =
             let innerLens = _.ZIndex, zIndex
             layoutLens >-> innerLens
-

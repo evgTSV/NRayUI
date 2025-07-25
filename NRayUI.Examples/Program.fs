@@ -1,4 +1,5 @@
 ﻿
+open System.Numerics
 open NRayUI
 open NRayUI.Components.UIConfigurator
 open NRayUI.Elements.Elem
@@ -14,7 +15,6 @@ open Raylib_CSharp.Windowing
 let test =
     StackPanel.create [
         LayoutSet.modifiers [
-            position Relative
             top 100f
             left 200f
             margin { Top = 10f; Right = 20f; Bottom = 10f; Left = 20f }
@@ -26,16 +26,35 @@ let test =
         BoxSet.borderWidth 10f
         BoxSet.cornerRadius { TopLeft = 0f; TopRight = 1.f; BottomLeft = 0.5f; BottomRight = 0.1f }
         StackPanelSet.orientation Orientation.Vertical
-        StackPanelSet.children [
-            Div.create [
+        PanelSet.children [
+            
+        ]
+    ]
+    
+let test2 =
+    Canvas.create [
+        LayoutSet.modifiers [
+            margin { Top = 25f; Right = 25f; Bottom = 25f; Left = 25f }
+            padding { Top = 10f; Right = 10f; Bottom = 10f; Left = 10f }
+        ]
+        LayoutSet.height 100f >> LayoutSet.width 50f
+        BoxSet.backgroundColor Color.Black
+        PanelSet.children [
+            Label.create [
+                LabelSet.text "Hello, World!"
+                LabelSet.color Color.Red
+                LabelSet.fontSize 20f
                 LayoutSet.modifiers [
-                    position Relative
-                    top 5f
-                    left 5f
-                    margin { Top = 5f; Right = 5f; Bottom = 5f; Left = 5f }
+                    position (Vector2(100f, 10f))
                 ]
-                LayoutSet.height 20f >> LayoutSet.width 20f
-                BoxSet.backgroundColor Color.Red
+            ]
+            Label.create [
+                LabelSet.color Color.Red
+                LabelSet.fontSize 20f
+                LayoutSet.modifiers [
+                    position (Vector2(100f, 50f))
+                ]
+                BoxSet.backgroundColor Color.Green
             ]
         ]
     ]
@@ -50,12 +69,8 @@ Raylib.SetConfigFlags(config)
 Window.Init(800, 800, "NRayUI Example")
 
 let rec mainLoop () =
-    BeginDrawing()
-    ClearBackground Color.RayWhite
-    UIRendering.render test
-    EndDrawing()
-    
     if not (Window.ShouldClose()) then
+        UIRendering.render test2
         mainLoop ()
         
 mainLoop()
