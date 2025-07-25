@@ -99,19 +99,34 @@ module Panels =
                     { context with
                         ClipRegion = 
                             Some <| Rectangle(pos.X, pos.Y, this.Box.Layout.Width, this.Box.Layout.Height) }
+                BeginScissorMode(int pos.X, int pos.Y, int this.Box.Layout.Width, int this.Box.Layout.Height)   
                 for i in 0 .. this.Children.Length - 1 do
                     let child = this.Children[i]
                     match child with
                     | :? ILayoutProvider as withLayout ->
+                        let prevLayout = 
+                            if i > 0 then
+                                let prevChild = this.Children[i - 1]
+                                match prevChild with
+                                | :? ILayoutProvider as prevWithLayout -> prevWithLayout.GetLayout
+                                | _ -> this.Box.Layout
+                            else this.Box.Layout
                         let childLayout = withLayout.GetLayout
-                        let childPos = pos + (Vector2(childLayout.Margin.Left, childLayout.Margin.Top) * Vector2(float32 i)) +
-                                        Vector2(this.Box.Layout.Padding.Left, this.Box.Layout.Padding.Top)
+                        let childPos = pos
+                                       + Vector2(childLayout.Margin.Left, childLayout.Margin.Top)
+                                       + Vector2(this.Box.Layout.Padding.Left, this.Box.Layout.Padding.Top)
+                                       + if i > 0 then
+                                           match this.Orientation with
+                                           | Orientation.Vertical -> Vector2(0f, prevLayout.Height + prevLayout.Margin.Bottom + childLayout.Margin.Top)
+                                           | Orientation.Horizontal -> Vector2(prevLayout.Width + prevLayout.Margin.Right + childLayout.Margin.Left, 0f)
+                                         else Vector2.Zero
                         let childContext = 
                             { context with
                                 CurrentPosition = childPos }
                         child.Render(childContext)
                     | _ ->
                         child.Render(context)
+                EndScissorMode()
 
             member this.Update(context) =
                 { this with

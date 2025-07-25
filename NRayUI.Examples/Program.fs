@@ -18,7 +18,7 @@ let test =
         LayoutSet.modifiers [
             top 100f
             left 200f
-            margin { Top = 10f; Right = 20f; Bottom = 10f; Left = 20f }
+            margin { Top = 100f; Right = 20f; Bottom = 10f; Left = 50f }
             padding { Top = 25f; Right = 15f; Bottom = 5f; Left = 5f }
         ]
         LayoutSet.height 500f >> LayoutSet.width 250f
@@ -29,20 +29,25 @@ let test =
         StackPanelSet.orientation Orientation.Vertical
         PanelSet.children [
             Label.create [
-                TextSet.content "Hello, World!"
+                TextSet.content "Hello!"
                 TextSet.color Color.Red
-                TextSet.fontSize 20f
+                TextSet.fontSize 60f
                 LayoutSet.modifiers [
                     margin { Top = 10f; Right = 10f; Bottom = 10f; Left = 10f }
+                    width 170f
+                    height 120f
                 ]
             ]
             Label.create [
                 TextSet.color Color.Red
-                TextSet.fontSize 20f
+                TextSet.fontSize 35f
                 LayoutSet.modifiers [
                     margin { Top = 10f; Right = 10f; Bottom = 10f; Left = 10f }
+                    width 170f
+                    height 70f
                 ]
                 BoxSet.backgroundColor Color.Green
+                BoxSet.crScan "0.5"
             ]
         ]
     ]

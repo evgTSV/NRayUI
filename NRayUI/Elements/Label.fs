@@ -16,7 +16,9 @@ type Label = {
             (this.Box :> IElem).Render(context)
             (this.Text :> IElem).Render(
                 { context with
-                    CurrentPosition = pos + Vector2(this.Box.Layout.Padding.Left, this.Box.Layout.Padding.Top) })
+                    CurrentPosition = pos
+                                      + Vector2(this.Box.Layout.Padding.Left, this.Box.Layout.Padding.Top)
+                                      + Vector2(0f, (this.Box.Layout.Height - this.Text.FontSize) / 2f) })
             
         member this.Update(_) = this
         
