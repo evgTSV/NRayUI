@@ -1,14 +1,23 @@
 ﻿module NRayUI.Window
 
-open Raylib_CSharp
+open Raylib_CSharp.Windowing
 open type Raylib_CSharp.Windowing.Window
 
-type WindowParameters =
-    {
-        mutable WindowSizePx: struct(int * int)
-        mutable RenderTargetSize: struct(int * int)
-        mutable ScaleFactor: float32
-    }
+type WindowConfig = {
+    Title: string
+    WindowSizePx: struct(int * int)
+} 
+
+type Window with
+    static member Init(config: WindowConfig) =
+        let struct (width, height) = config.WindowSizePx
+        Window.Init(width, height, config.Title)
+
+type WindowParameters = {
+    mutable WindowSizePx: struct(int * int)
+    mutable RenderTargetSize: struct(int * int)
+    mutable ScaleFactor: float32
+} with
     static member DefaultWindowSizeWithoutScale: struct(int*int) = struct(600, 400)
 
     static member Init(): WindowParameters =

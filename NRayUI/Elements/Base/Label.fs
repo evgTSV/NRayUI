@@ -1,26 +1,24 @@
 ﻿namespace NRayUI.Elements
 
 open System.Numerics
-open Aether
 open NRayUI.Elements.Elem
 open NRayUI.Modifier
-open Raylib_CSharp.Colors
 
 type Label = {
     Box: Box
     Text: Text
 } with
     interface IElem with
-        member this.Render(context) =
-            let pos = context.CurrentPosition
-            (this.Box :> IElem).Render(context)
+        member this.Render(ctx) =
+            let pos = ctx.CurrentPosition
+            (this.Box :> IElem).Render(ctx)
             (this.Text :> IElem).Render(
-                { context with
+                { ctx with
                     CurrentPosition = pos
                                       + Vector2(this.Box.Layout.Padding.Left, this.Box.Layout.Padding.Top)
                                       + Vector2(0f, (this.Box.Layout.Height - this.Text.FontSize) / 2f) })
             
-        member this.Update(_) = this
+        member this.Update _ = this
         
     interface ILayoutProvider with
         member this.GetLayout = this.Box.Layout

@@ -1,19 +1,24 @@
 ﻿module NRayUI.Positioning
 
+[<Struct>]
 type Sides = {
     Top: float32
     Right: float32
     Bottom: float32
     Left: float32
-}
+} with
+    static member zero = Unchecked.defaultof<Sides>
 
+[<Struct>]
 type Corners = {
     TopLeft: float32
     TopRight: float32
     BottomRight: float32
     BottomLeft: float32
-}
+} with
+    static member zero = Unchecked.defaultof<Corners>
 
+[<AutoOpen>]
 module Alignment =
     [<Struct>]
     type Vertical =

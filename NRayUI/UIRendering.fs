@@ -1,46 +1,85 @@
 ﻿module NRayUI.UIRendering
 
 open System.Numerics
+open JetBrains.Lifetimes
 open Microsoft.Extensions.DependencyInjection
 open NRayUI.Camera
-open NRayUI.Components.UIConfigurator
 open NRayUI.Elements
-open NRayUI.Elements.Panels
-open NRayUI.Field
+open NRayUI.Loader
 open NRayUI.Modifier
-open NRayUI.Positioning
+open NRayUI.Window
 open Raylib_CSharp.Colors
 open Raylib_CSharp
+open Raylib_CSharp.Rendering
 open type Raylib_CSharp.Rendering.Graphics
+open Raylib_CSharp.Windowing
 
-let rec renderChildWithLayout
-    (child: 'a when 'a :> IElem and IWithLayout<'a>)
-    (context: RenderingContext)=
-    child.Render context
+type View<'a when 'a :> IElem and IWithLayout<'a>> =
+    RenderingContext -> 'a
 
-let render (elem: 'a when 'a :> IElem and IWithLayout<'a>) =
-    if (Windowing.Window.IsReady() |> not) then
-        failwith "Window is not ready for rendering. Please ensure the window is initialized before rendering."
-        
-    let camera = 
-        ConfigureCamera {
-            WindowSizePx = struct (Windowing.Window.GetScreenWidth(), Windowing.Window.GetScreenHeight())
-            RenderTargetSize = struct (Windowing.Window.GetScreenWidth(), Windowing.Window.GetScreenHeight())
-            ScaleFactor = 1.0f
-        }
-        
+let inline renderPrologue (ctx: RenderingContext) =
     BeginDrawing()
-    BeginMode2D(camera)
+    BeginMode2D(ctx.Camera)
+    BeginBlendMode(BlendMode.Alpha)
     ClearBackground Color.RayWhite
-        
-    renderChildWithLayout elem {
-        Camera = camera
-        RenderTargetSize = Vector2.Zero
-        CurrentPosition = Vector2.Zero + Vector2(elem.GetLayout.Margin.Left, elem.GetLayout.Margin.Top)
-        ClipRegion = None
-        IsDebugMode = false
-        Services = ServiceCollection().BuildServiceProvider()
-    }
     
+let inline renderEpilogue() =
+    EndBlendMode()
     EndMode2D()
     EndDrawing()
+
+let rec renderChildWithLayout
+    (child: View<'a>)
+    (ctx: RenderingContext)=
+    (child ctx).Render ctx
+
+let render
+    (view: View<'a>)
+    (ctx: RenderingContext) =
+    if (Window.IsReady() |> not) then
+        failwith "Window is not ready for rendering. Please ensure the window is initialized before rendering."
+        
+    renderPrologue ctx
+        
+    renderChildWithLayout view ctx
+    
+    renderEpilogue()
+    
+let startRendering
+    (windowConfig: WindowConfig)
+    (config: ConfigFlags)
+    (view: View<'a>) =
+    
+    use lifetimeDef = new LifetimeDefinition()
+    let lifetime = lifetimeDef.Lifetime
+    
+    Raylib.SetConfigFlags(config)
+    Window.Init(windowConfig)
+    
+    let camera = 
+        ConfigureCamera {
+            WindowSizePx = struct (Window.GetScreenWidth(), Window.GetScreenHeight())
+            RenderTargetSize = struct (Window.GetScreenWidth(), Window.GetScreenHeight())
+            ScaleFactor = 1.0f
+        }
+    
+    let ctx = {
+        Camera = camera
+        RenderTargetSize = Vector2.Zero
+        CurrentPosition = Vector2.Zero
+        ClipRegion = None
+        IsDebugMode = false
+        Resources = Resources(lifetime)
+        Services = ServiceCollection().BuildServiceProvider()
+    }
+
+    let rec loop() =
+        if not (Window.ShouldClose()) then
+            render view ctx
+            loop()
+            
+    loop()
+    
+    lifetimeDef.Terminate()
+
+    Window.Close()

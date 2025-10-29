@@ -1,20 +1,18 @@
 ﻿namespace NRayUI.Elements
 
 open System
-open System.Collections.Generic
 open System.Numerics
-open System.Threading
 open Aether
 open Aether.Operators
 open Microsoft.Extensions.DependencyInjection
 open NRayUI
+open NRayUI.Loader
 open NRayUI.Modifier
 open NRayUI.Positioning
 open NRayUI.RenderingUtils
 open NRayUI.Utils
 open Raylib_CSharp.Camera.Cam2D
 open Raylib_CSharp.Colors
-open Raylib_CSharp.Rendering
 open type Raylib_CSharp.Rendering.Graphics
 open type Raylib_CSharp.Fonts.TextManager
 open Raylib_CSharp.Fonts
@@ -30,12 +28,14 @@ and RenderingContext = {
     CurrentPosition: Vector2
     ClipRegion: Rectangle option
     IsDebugMode: bool
+    Resources: Resources
     Services: ServiceProvider
 }
 and UpdateContext = {
     Event: EventHandler // TODO: Implement event system
 }
 
+[<AutoOpen>]
 module Elem =
    
     type Box = {
@@ -47,8 +47,8 @@ module Elem =
         Smoothness: int
     } with
         interface IElem with
-            member this.Render(context) =
-                let pos = context.CurrentPosition
+            member this.Render(ctx) =
+                let pos = ctx.CurrentPosition
                 let rec_ = Rectangle(pos.X, pos.Y, this.Layout.Width, this.Layout.Height)
                 DrawRectangleCustomRounded
                     rec_
@@ -62,7 +62,7 @@ module Elem =
                     this.Smoothness
                     this.BorderColor
 
-            member this.Update(_) = this
+            member this.Update _ = this
             
         interface ILayoutProvider with
             member this.GetLayout = this.Layout
@@ -177,16 +177,17 @@ module Elem =
                     let layout = createLayout pos textMeasure.X textMeasure.Y
                     { Box.Default with
                         Layout = layout
-                        BackgroundColor = this.BackgroundColor })      
+                        BackgroundColor = this.BackgroundColor
+                        BorderColor = Color.Blank })
         
         interface IElem with
-            member this.Render(context) =
-                let pos = context.CurrentPosition
+            member this.Render(ctx) =
+                let pos = ctx.CurrentPosition
                 let box = this.CreateBoxMem pos
-                (box :> IElem).Render(context)
+                (box :> IElem).Render(ctx)
                 DrawTextEx(this.GetFont(), this.Content, pos, this.FontSize, this.Spacing, this.Color)
 
-            member this.Update(_) = this
+            member this.Update _ = this
             
         static member private DefaultLazy =
             lazy {

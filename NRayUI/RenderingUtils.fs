@@ -3,7 +3,6 @@
 open System
 open System.Numerics
 open NRayUI.RlGlUtils
-open NRayUI.Field
 open NRayUI.Positioning
 open NRayUI.Utils
 open Raylib_CSharp

@@ -15,17 +15,24 @@
         <Compile Include="Modifier.fs" />
         <Compile Include="Window.fs" />
         <Compile Include="Camera.fs" />
+        <Compile Include="Loader.fs" />
+        <Compile Include="Config.fs" />
         <Compile Include="RlGlUtils.fs" />
         <Compile Include="RenderingUtils.fs" />
-        <Compile Include="Elements\Elem.fs" />
-        <Compile Include="Elements\Label.fs" />
-        <Compile Include="Elements\Panels.fs" />
+        <Compile Include="Elements\Base\Elem.fs" />
+        <Compile Include="Elements\Base\Label.fs" />
+        <Compile Include="Elements\Base\Panel.fs" />
+        <Compile Include="Elements\Base\ImageSource.fs" />
+        <Compile Include="Elements\Panels\Canvas.fs" />
+        <Compile Include="Elements\Panels\StackPanel.fs" />
+        <Compile Include="Elements\ImageBox.fs" />
         <Compile Include="UIConfigurator.fs" />
         <Compile Include="UIRendering.fs" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Aether" Version="8.3.1" />
+      <PackageReference Include="JetBrains.Lifetimes" Version="2025.2.2" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
       <PackageReference Include="Raylib-CSharp" Version="5.0.0" />
     </ItemGroup>

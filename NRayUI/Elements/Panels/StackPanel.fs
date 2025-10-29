@@ -1,0 +1,116 @@
+﻿namespace NRayUI.Elements.Panels
+
+open System.Numerics
+open NRayUI.Elements
+open NRayUI.Field
+open NRayUI.Modifier
+open Raylib_CSharp.Transformations
+open type Raylib_CSharp.Rendering.Graphics
+
+type StackPanel = {
+    Orientation: Orientation
+    Children: IElem list
+    Box: Box
+} with
+    interface IPanel<StackPanel> with    
+        member this.GetChildren = this.Children
+        member this.SetChildren(children) =
+            { this with Children = children }
+        
+    interface IElem with
+        member this.Render(ctx) =
+            let layout =
+                this.Box.Layout
+                
+            let ctx =
+                { ctx with
+                    CurrentPosition =
+                        ctx.CurrentPosition
+                        + Vector2(layout.Margin.Left, layout.Margin.Top)
+                }   
+                
+            (this.Box :> IElem).Render(ctx)
+            
+            
+            let borderOffset = this.Box.BorderWidth / 2f
+            let mutable pos = ctx.CurrentPosition
+                              + Vector2()
+                              + Vector2(borderOffset)
+            let scissorOffset =
+                let p = ctx.CurrentPosition
+                (int <| p.X + borderOffset,
+                 int <| p.Y + borderOffset,
+                 int <| layout.Width - borderOffset * 2f,
+                 int <| layout.Height - borderOffset * 2f)
+            let ctx = 
+                { ctx with
+                    ClipRegion = 
+                        Some <| Rectangle(pos.X, pos.Y, layout.Width, layout.Height) }
+            BeginScissorMode scissorOffset
+            for i in 0 .. this.Children.Length - 1 do
+                let child = this.Children[i]
+                match child with
+                | :? ILayoutProvider as withLayout ->
+                    let prevLayout = 
+                        if i > 0 then
+                            let prevChild = this.Children[i - 1]
+                            match prevChild with
+                            | :? ILayoutProvider as prevWithLayout -> prevWithLayout.GetLayout
+                            | _ -> layout
+                        else layout
+                    let childLayout = withLayout.GetLayout
+                    let childPos = pos
+                                   + Vector2(layout.Padding.Left, layout.Padding.Top)
+                                   + if i > 0 then
+                                       match this.Orientation with
+                                       | Orientation.Vertical ->
+                                           let offset = Vector2(0f, prevLayout.Height + prevLayout.Margin.Bottom + childLayout.Margin.Top)
+                                           pos <- pos + offset
+                                           offset
+                                       | Orientation.Horizontal ->
+                                           let offset = Vector2(prevLayout.Width + prevLayout.Margin.Right + childLayout.Margin.Left, 0f)
+                                           pos <- pos + offset
+                                           offset
+                                     else Vector2.Zero
+                    let childContext = 
+                        { ctx with
+                            CurrentPosition = childPos }
+                    child.Render(childContext)
+                | _ ->
+                    child.Render(ctx)
+            EndScissorMode()
+
+        member this.Update(ctx) =
+            { this with
+                Children =
+                   this.Children
+                   |> List.map _.Update(ctx)
+            }
+            
+    interface ILayoutProvider with
+        member this.GetLayout = this.Box.Layout
+        
+    interface IWithLayout<StackPanel> with
+        member this.SetLayout(layout) = { this with StackPanel.Box.Layout = layout }
+        
+    interface IBoxProvider with 
+        member this.GetBox = this.Box
+    
+    interface IWithBox<StackPanel> with
+        member this.SetBox(box) = { this with Box = box }
+        
+    static member DefaultLazy =
+        lazy (
+            let box = Box.Default
+            { Orientation = Orientation.Vertical
+              Children = []
+              Box = box }
+        )
+    static member inline Default() = 
+        StackPanel.DefaultLazy.Force()
+
+/// StackPanel - panel, where children layout by the stack order with orientation
+[<RequireQualifiedAccess>]
+module StackPanel = 
+    let create (attributes: (StackPanel -> StackPanel) list) : StackPanel =
+        attributes |> List.fold (fun acc attr -> attr acc) (StackPanel.Default())

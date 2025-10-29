@@ -1,18 +1,16 @@
 ﻿module NRayUI.Components.UIConfigurator
 
 open System.Numerics
-open System.Runtime.InteropServices
 open Aether
 open NRayUI
 open NRayUI.Elements
-open NRayUI.Elements.Elem
 open NRayUI.Elements.Panels
 open NRayUI.Field
 open NRayUI.Modifier
 open NRayUI.Positioning
-open NRayUI.Positioning.Alignment
 open Raylib_CSharp.Colors
 open Raylib_CSharp.Fonts
+open Raylib_CSharp.Textures
 
 [<RequireQualifiedAccess>]
 module LayoutSet =
@@ -159,3 +157,21 @@ module StackPanelSet =
     /// Sets the orientation of a StackPanel.
     let orientation (orientation: Orientation) (panel: StackPanel) =
         { panel with Orientation = orientation }
+      
+[<RequireQualifiedAccess>]  
+module ImageBoxSet =
+    
+    /// Sets the source of image.
+    let source (source: IImageSource) (imageBox: ImageBox) =
+        { imageBox with Image = source }
+        
+    /// <summary>
+    /// Same as <see cref="source"/>, 
+    /// but set Texture2D as source image
+    /// </summary>
+    let texture (tex: Texture2D) =
+        let img = TextureSource(tex)
+        source img
+        
+    let tint (value: Color) (imageBox: ImageBox) =
+        { imageBox with Tint = value }

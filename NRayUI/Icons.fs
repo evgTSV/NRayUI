@@ -6,7 +6,6 @@
 module NRayUI.Icons
 
 open System
-open System.Collections.Generic
 open System.Numerics
 open Raylib_CSharp.Colors
 
@@ -552,7 +551,7 @@ let private getIconData (icon: Icon) =
 let private bitCheck (value: uint32) (bit: int) =
     (value &&& (1u <<< bit)) <> 0u
     
-let drawIcon (icon: IconInfo) (pos: Vector2) =
+let drawIcon (pos: Vector2) (icon: IconInfo) =
     let data = getIconData icon.Icon
     let size = icon.Size
     let color = icon.Color
