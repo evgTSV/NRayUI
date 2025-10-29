@@ -32,8 +32,7 @@
 
     <ItemGroup>
       <PackageReference Include="Aether" Version="8.3.1" />
-      <PackageReference Include="JetBrains.Lifetimes" Version="2025.2.2" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
       <PackageReference Include="Raylib-CSharp" Version="5.0.0" />
     </ItemGroup>
 
