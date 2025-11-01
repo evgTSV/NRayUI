@@ -1,4 +1,4 @@
-﻿# Declarative UI in F# with Raylib
+# Declarative UI in F# with Raylib
 
 ## Introduction
 
