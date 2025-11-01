@@ -70,7 +70,7 @@ jobs:
     - name: Install Fantomas
       run: dotnet tool install -g fantomas
     - name: Verify code format
-      run: fantomas . --recurse --check
+      run: fantomas --check .
   verify-workflows:
     runs-on: ubuntu-24.04
     env:

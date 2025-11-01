@@ -124,7 +124,7 @@ let workflows = [
             )
             step(
                 name = "Verify code format",
-                run = "fantomas . --recurse --check"
+                run = "fantomas --check ."
             )
         ]
         job "verify-workflows" [
