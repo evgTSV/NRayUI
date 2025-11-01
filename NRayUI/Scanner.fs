@@ -1,11 +1,13 @@
 ﻿module NRayUI.Scanner
 
+open NRayUI.Utils
+
 let separator = [|' '; ';';|]
 
 let scanSidesInput (input: string) =
     let values =
         input.Split(separator, System.StringSplitOptions.RemoveEmptyEntries)
-        |> Array.map float32
+        |> Array.map parseFloat32
     match values with
     | [|  |] ->
         Positioning.zeroSides
@@ -30,12 +32,12 @@ let scanSidesInput (input: string) =
             Left = d
         }
     | _ -> 
-        failwithf $"Invalid input: %s{input}. Expected format: 'top,right,bottom,left'"
+        failwithf $"Invalid input: %s{input}. Expected format: 'top;right;bottom;left'"
         
 let scanCornersInput (input: string) =
     let values =
         input.Split(separator, System.StringSplitOptions.RemoveEmptyEntries)
-        |> Array.map float32
+        |> Array.map parseFloat32
     match values with
     | [|  |] ->
         Positioning.zeroCorners
@@ -60,4 +62,4 @@ let scanCornersInput (input: string) =
             BottomLeft = d
         }
     | _ -> 
-        failwithf $"Invalid input: %s{input}. Expected format: 'topLeft,topRight,bottomRight,bottomLeft'"
+        failwithf $"Invalid input: %s{input}. Expected format: 'topLeft;topRight;bottomRight;bottomLeft"

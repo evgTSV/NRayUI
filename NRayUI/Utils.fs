@@ -21,6 +21,9 @@ let lazyMemoize<'a, 'b> (cmp: IEqualityComparer<'a>) f =
     fun arg ->
         cache.GetOrAdd(arg, fun a -> Lazy<'b>(fun () -> f a)).Value
         
+let parseFloat32 (s: string) =
+    Single.Parse(s, System.Globalization.CultureInfo.InvariantCulture)
+        
 type Rectangle with
     member this.AsScissor with get() =
         (int this.X, int this.Y, int this.Width, int this.Height)
