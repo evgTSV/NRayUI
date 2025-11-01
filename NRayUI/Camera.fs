@@ -1,4 +1,4 @@
-﻿module NRayUI.Camera
+module NRayUI.Camera
 
 open System.Numerics
 open NRayUI.Window

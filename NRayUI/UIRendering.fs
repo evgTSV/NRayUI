@@ -1,4 +1,4 @@
-﻿module NRayUI.UIRendering
+module NRayUI.UIRendering
 
 open System.Numerics
 open JetBrains.Lifetimes

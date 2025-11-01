@@ -1,4 +1,4 @@
-﻿module NRayUI.Window
+module NRayUI.Window
 
 open Raylib_CSharp.Windowing
 open type Raylib_CSharp.Windowing.Window

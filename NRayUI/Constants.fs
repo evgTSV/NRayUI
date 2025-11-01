@@ -1,4 +1,4 @@
-﻿module NRayUI.Constants
+module NRayUI.Constants
 
 [<Literal>]
 let SmoothCircleErrorRate = 0.5f

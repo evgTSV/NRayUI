@@ -1,4 +1,4 @@
-﻿// This file includes adapted code from raygui (https://github.com/raysan5/raygui)
+// This file includes adapted code from raygui (https://github.com/raysan5/raygui)
 // raygui is licensed under the zlib/libpng license.
 // Copyright (c) 2014-2024 Ramon Santamaria (@raysan5)
 // See LICENSE.zlib for details.

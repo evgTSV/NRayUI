@@ -1,4 +1,4 @@
-﻿module NRayUI.Components.UIConfigurator
+module NRayUI.Components.UIConfigurator
 
 open System.Numerics
 open Aether

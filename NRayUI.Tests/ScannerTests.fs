@@ -1,4 +1,4 @@
-﻿module ScannerTests
+module ScannerTests
 
 open System
 open NRayUI.Positioning

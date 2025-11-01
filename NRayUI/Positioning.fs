@@ -1,4 +1,4 @@
-﻿module NRayUI.Positioning
+module NRayUI.Positioning
 
 [<Struct>]
 type Sides = {

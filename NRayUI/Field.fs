@@ -1,4 +1,4 @@
-﻿module NRayUI.Field
+module NRayUI.Field
 
 open Raylib_CSharp.Transformations
 

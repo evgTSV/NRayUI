@@ -1,1 +1,1 @@
-﻿module NRayUI.Tests.Helpers
+module NRayUI.Tests.Helpers

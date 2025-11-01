@@ -1,4 +1,4 @@
-﻿namespace NRayUI
+namespace NRayUI
 
 open Microsoft.Extensions.DependencyInjection
 open NRayUI.Window

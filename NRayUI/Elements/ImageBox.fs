@@ -1,4 +1,4 @@
-﻿namespace NRayUI.Elements
+namespace NRayUI.Elements
 
 open System.Numerics
 open NRayUI.Elements.EmptySource

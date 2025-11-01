@@ -1,4 +1,4 @@
-﻿module NRayUI.RenderBase
+module NRayUI.RenderBase
 
 open System
 open System.Numerics

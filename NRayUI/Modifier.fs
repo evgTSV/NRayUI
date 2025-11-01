@@ -1,4 +1,4 @@
-﻿namespace NRayUI
+namespace NRayUI
 
 open System.Numerics
 open Aether

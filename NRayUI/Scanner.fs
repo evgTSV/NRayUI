@@ -1,4 +1,4 @@
-﻿module NRayUI.Scanner
+module NRayUI.Scanner
 
 open NRayUI.Utils
 

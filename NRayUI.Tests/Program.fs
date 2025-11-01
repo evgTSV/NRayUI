@@ -1,4 +1,4 @@
-﻿module Program
+module Program
 
 [<EntryPoint>]
 let main _ =

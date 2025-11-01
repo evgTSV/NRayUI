@@ -1,4 +1,4 @@
-﻿module NRayUI.Utils
+module NRayUI.Utils
 
 open System
 open System.Collections.Concurrent

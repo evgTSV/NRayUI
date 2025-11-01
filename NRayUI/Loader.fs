@@ -1,4 +1,4 @@
-﻿module NRayUI.Loader
+module NRayUI.Loader
 
 open System.Collections.Concurrent
 open JetBrains.Lifetimes

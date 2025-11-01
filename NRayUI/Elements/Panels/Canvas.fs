@@ -1,4 +1,4 @@
-﻿namespace NRayUI.Elements.Panels
+namespace NRayUI.Elements.Panels
 
 open System.Numerics
 open NRayUI.Elements
