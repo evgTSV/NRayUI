@@ -1,5 +1,12 @@
 ﻿root = true
 
+[*]
+charset = utf-8
+indent_size = 4
+indent_style = space
+end_of_line = lf
+insert_final_newline = true
+
 [*.fs]
 max_line_length=140
 fsharp_newline_between_type_definition_and_members=true
