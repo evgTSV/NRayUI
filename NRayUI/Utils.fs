@@ -4,6 +4,7 @@ open System
 open System.Collections.Concurrent
 open System.Collections.Generic
 open System.Numerics
+open Raylib_CSharp.Transformations
 
 type Vector2Comparer() =
     interface IEqualityComparer<Vector2> with
@@ -19,3 +20,9 @@ let lazyMemoize<'a, 'b> (cmp: IEqualityComparer<'a>) f =
     let cache = ConcurrentDictionary<'a, Lazy<'b>>(cmp)
     fun arg ->
         cache.GetOrAdd(arg, fun a -> Lazy<'b>(fun () -> f a)).Value
+        
+type Rectangle with
+    member this.AsScissor with get() =
+        (int this.X, int this.Y, int this.Width, int this.Height)
+    static member zero with get() =
+        Rectangle(0f, 0f, 0f, 0f)

@@ -7,6 +7,7 @@ open NRayUI.Camera
 open NRayUI.Elements
 open NRayUI.Loader
 open NRayUI.Modifier
+open NRayUI.RenderBase
 open NRayUI.Window
 open Raylib_CSharp.Colors
 open Raylib_CSharp
@@ -28,21 +29,16 @@ let inline renderEpilogue() =
     EndMode2D()
     EndDrawing()
 
-let rec renderChildWithLayout
+let inline renderChildWithLayout
     (child: View<'a>)
     (ctx: RenderingContext)=
     (child ctx).Render ctx
 
 let render
     (view: View<'a>)
-    (ctx: RenderingContext) =
-    if (Window.IsReady() |> not) then
-        failwith "Window is not ready for rendering. Please ensure the window is initialized before rendering."
-        
-    renderPrologue ctx
-        
+    (ctx: RenderingContext) =    
+    renderPrologue ctx       
     renderChildWithLayout view ctx
-    
     renderEpilogue()
     
 let startRendering
@@ -56,6 +52,9 @@ let startRendering
     Raylib.SetConfigFlags(config)
     Window.Init(windowConfig)
     
+    if (Window.IsReady() |> not) then
+        failwith "Window is not ready for rendering. Please ensure the window is initialized before rendering."
+    
     let camera = 
         ConfigureCamera {
             WindowSizePx = struct (Window.GetScreenWidth(), Window.GetScreenHeight())
@@ -67,7 +66,7 @@ let startRendering
         Camera = camera
         RenderTargetSize = Vector2.Zero
         CurrentPosition = Vector2.Zero
-        ClipRegion = None
+        ScissorRegion = None
         IsDebugMode = false
         Resources = Resources(lifetime)
         Services = ServiceCollection().BuildServiceProvider()

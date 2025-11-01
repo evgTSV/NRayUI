@@ -543,23 +543,10 @@ type IconInfo = {
     Color: Color
 }
     
-let private getIconData (icon: Icon) =
+let getIconData (icon: Icon) =
     let index = icon |> int
     let span = Span(IconsData.guiIcons)
     span.Slice(index * IconDataElements, IconDataElements)
     
-let private bitCheck (value: uint32) (bit: int) =
+let bitCheck (value: uint32) (bit: int) =
     (value &&& (1u <<< bit)) <> 0u
-    
-let drawIcon (pos: Vector2) (icon: IconInfo) =
-    let data = getIconData icon.Icon
-    let size = icon.Size
-    let color = icon.Color
-    
-    for i in 0 .. IconDataElements - 1 do
-        let elem = data[i]
-        for k in 0 .. 31 do
-            if bitCheck elem k then
-                let x = (k % IconSize) * size + int pos.X
-                let y = (k / IconSize + i * 2) * size + int pos.Y
-                Raylib_CSharp.Rendering.Graphics.DrawRectangle(x, y, size, size, color)

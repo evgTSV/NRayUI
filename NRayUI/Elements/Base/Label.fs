@@ -3,6 +3,7 @@
 open System.Numerics
 open NRayUI.Elements.Elem
 open NRayUI.Modifier
+open NRayUI.Field
 
 type Label = {
     Box: Box
@@ -11,12 +12,17 @@ type Label = {
     interface IElem with
         member this.Render(ctx) =
             let pos = ctx.CurrentPosition
+            let layout = (this :> ILayoutProvider).GetLayout
             (this.Box :> IElem).Render(ctx)
             (this.Text :> IElem).Render(
                 { ctx with
-                    CurrentPosition = pos
-                                      + Vector2(this.Box.Layout.Padding.Left, this.Box.Layout.Padding.Top)
-                                      + Vector2(0f, (this.Box.Layout.Height - this.Text.FontSize) / 2f) })
+                    CurrentPosition =
+                        pos
+                        + Vector2(layout.Padding.Left, layout.Padding.Top)
+                        + Vector2(0f, (layout.Height - this.Text.FontSize) / 2f)
+                    ScissorRegion =
+                        this.Box.GetScissorRange pos <&&?> ctx.ScissorRegion
+                })
             
         member this.Update _ = this
         
@@ -43,7 +49,7 @@ type Label = {
           Box = Box.Default
           Text = Text.Default }
         
-    static member Default =
+    static member Default with get() =
         Label.DefaultLazy.Force()
            
 [<RequireQualifiedAccess>] 

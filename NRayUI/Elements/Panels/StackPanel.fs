@@ -1,15 +1,16 @@
 ﻿namespace NRayUI.Elements.Panels
 
 open System.Numerics
+open NRayUI.Constants
 open NRayUI.Elements
 open NRayUI.Field
 open NRayUI.Modifier
-open Raylib_CSharp.Transformations
 open type Raylib_CSharp.Rendering.Graphics
 
 type StackPanel = {
     Orientation: Orientation
     Children: IElem list
+    Spacing: float32
     Box: Box
 } with
     interface IPanel<StackPanel> with    
@@ -20,7 +21,7 @@ type StackPanel = {
     interface IElem with
         member this.Render(ctx) =
             let layout =
-                this.Box.Layout
+                (this :> ILayoutProvider).GetLayout
                 
             let ctx =
                 { ctx with
@@ -32,21 +33,17 @@ type StackPanel = {
             (this.Box :> IElem).Render(ctx)
             
             
-            let borderOffset = this.Box.BorderWidth / 2f
+            let borderOffset = this.Box.BorderWidth
             let mutable pos = ctx.CurrentPosition
                               + Vector2()
                               + Vector2(borderOffset)
-            let scissorOffset =
-                let p = ctx.CurrentPosition
-                (int <| p.X + borderOffset,
-                 int <| p.Y + borderOffset,
-                 int <| layout.Width - borderOffset * 2f,
-                 int <| layout.Height - borderOffset * 2f)
-            let ctx = 
+                
+            let ctx =
                 { ctx with
-                    ClipRegion = 
-                        Some <| Rectangle(pos.X, pos.Y, layout.Width, layout.Height) }
-            BeginScissorMode scissorOffset
+                    ScissorRegion = 
+                        this.Box.GetScissorRange pos <&&?> ctx.ScissorRegion
+                }
+                
             for i in 0 .. this.Children.Length - 1 do
                 let child = this.Children[i]
                 match child with
@@ -64,11 +61,11 @@ type StackPanel = {
                                    + if i > 0 then
                                        match this.Orientation with
                                        | Orientation.Vertical ->
-                                           let offset = Vector2(0f, prevLayout.Height + prevLayout.Margin.Bottom + childLayout.Margin.Top)
+                                           let offset = Vector2(0f, prevLayout.Height + prevLayout.Margin.Bottom + childLayout.Margin.Top + this.Spacing)
                                            pos <- pos + offset
                                            offset
                                        | Orientation.Horizontal ->
-                                           let offset = Vector2(prevLayout.Width + prevLayout.Margin.Right + childLayout.Margin.Left, 0f)
+                                           let offset = Vector2(prevLayout.Width + prevLayout.Margin.Right + childLayout.Margin.Left + this.Spacing, 0f)
                                            pos <- pos + offset
                                            offset
                                      else Vector2.Zero
@@ -78,7 +75,6 @@ type StackPanel = {
                     child.Render(childContext)
                 | _ ->
                     child.Render(ctx)
-            EndScissorMode()
 
         member this.Update(ctx) =
             { this with
@@ -99,18 +95,19 @@ type StackPanel = {
     interface IWithBox<StackPanel> with
         member this.SetBox(box) = { this with Box = box }
         
-    static member DefaultLazy =
+    static member private DefaultLazy =
         lazy (
             let box = Box.Default
             { Orientation = Orientation.Vertical
               Children = []
+              Spacing = DefaultStackPanelSpacing
               Box = box }
         )
-    static member inline Default() = 
+    static member Default with get() = 
         StackPanel.DefaultLazy.Force()
 
 /// StackPanel - panel, where children layout by the stack order with orientation
 [<RequireQualifiedAccess>]
 module StackPanel = 
     let create (attributes: (StackPanel -> StackPanel) list) : StackPanel =
-        attributes |> List.fold (fun acc attr -> attr acc) (StackPanel.Default())
+        attributes |> List.fold (fun acc attr -> attr acc) StackPanel.Default

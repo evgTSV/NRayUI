@@ -6,6 +6,7 @@ open NRayUI.Elements.Panels
 open NRayUI.Field
 open NRayUI.Icons
 open NRayUI.Modifier
+open NRayUI.RenderBase
 open NRayUI.Window
 open NRayUI.Positioning
 open NRayUI.UIRendering
@@ -27,14 +28,12 @@ let test (ctx: RenderingContext) =
         BoxSet.cornerRadius { TopLeft = 0f; TopRight = 1f; BottomLeft = 0.5f; BottomRight = 0.1f }
         StackPanelSet.orientation Orientation.Vertical
         PanelSet.children [
-            let labelMargin = margin { Margin.zero with Bottom = 10f }
             Label.create [
                 TextSet.content "Hello!"
                 TextSet.color Color.Red
                 TextSet.fontSize 60f
                 LayoutSet.modifiers [
                     paddingScan "0 0 0 20"
-                    labelMargin
                     width 200f >> height 120f
                 ]
                 BoxSet.cornerRadius { Corners.zero with TopRight = 1f }
@@ -46,29 +45,27 @@ let test (ctx: RenderingContext) =
                 ImageBoxSet.tint Color.RayWhite
                 LayoutSet.modifiers [
                     padding { Padding.zero with Top = 8f; Left = 8f }
-                    labelMargin
                     width 100f >> height 100f
                 ]
             ]
             Label.create [
-                TextSet.content $"L{String('o', 100)}ng"
+                TextSet.content $"L{String('o', 50)}ng"
                 TextSet.color Color.Black
                 LayoutSet.modifiers [
                     paddingScan "0 0 0 30"
-                    labelMargin
-                    width 2000f >> height 70f
+                    width 800f >> height 70f
                 ]
                 BoxSet.backgroundColor Color.White
                 BoxSet.crScan "1"
             ]
             ImageBox.create [
                 BoxSet.backgroundColor Color.Blank
-                BoxSet.borderColor Color.Blank
-                ImageBoxSet.texture (ctx.Resources.LoadTexture @"C:\Users\EVGENII\Downloads\nrayui_logo.png")
+                BoxSet.borderColor Color.Red
+                ImageBoxSet.texture (ctx.Resources.LoadTexture @"./Assets/nrayui_logo_100x100.png")
                 ImageBoxSet.tint Color.RayWhite
                 LayoutSet.modifiers [
-                    labelMargin
-                    width 100f >> height 100f
+                    paddingScan "10"
+                    width 120f >> height 120f
                 ]
             ]
         ]

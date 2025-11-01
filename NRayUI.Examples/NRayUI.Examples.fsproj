@@ -17,5 +17,10 @@
       <PackageReference Include="JetBrains.Lifetimes" Version="2025.2.2" />
       <PackageReference Include="Raylib-CSharp" Version="5.0.0" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <Content Include="Assets\nrayui_logo_500x500.png" CopyToOutputDirectory="PreserveNewest"/>
+        <Content Include="Assets\nrayui_logo_100x100.png" CopyToOutputDirectory="PreserveNewest"/>
+    </ItemGroup>
 
 </Project>

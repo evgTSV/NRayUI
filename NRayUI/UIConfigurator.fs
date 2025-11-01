@@ -157,6 +157,10 @@ module StackPanelSet =
     /// Sets the orientation of a StackPanel.
     let orientation (orientation: Orientation) (panel: StackPanel) =
         { panel with Orientation = orientation }
+        
+    /// Sets the distance between continuous elements of a StackPanel.
+    let spacing (value: float32) (panel: StackPanel) =
+        { panel with Spacing = value }
       
 [<RequireQualifiedAccess>]  
 module ImageBoxSet =

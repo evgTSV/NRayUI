@@ -3,6 +3,7 @@
 open System
 open System.Numerics
 open NRayUI.Icons
+open NRayUI.RenderBase
 open Raylib_CSharp.Colors
 open Raylib_CSharp.Images
 open Raylib_CSharp.Textures
@@ -12,12 +13,14 @@ open type Raylib_CSharp.Rendering.Graphics
 type IImageSource =
     abstract Height: float
     abstract Width: float
-    abstract Draw: pos: Vector2 * tint: Color -> unit
+    abstract Draw: pos: Vector2 * tint: Color -> RenderAction
     
 type TextureSource(texture: Texture2D) =
     interface IImageSource with
         member this.Draw(pos, tint) =
-            DrawTextureV(texture, pos, tint)
+            fun _ ->
+                DrawTextureV(texture, pos, tint)
+            |> withScissor
             
         member this.Height = texture.Height
         member this.Width = texture.Width
@@ -29,7 +32,9 @@ type IconSource(icon: Icon, size: int) =
                 Icon = icon
                 Size = size
                 Color = tint
-            } |> drawIcon pos
+            }
+            |> drawIcon pos
+            |> withScissor
             
         member this.Height = size
         member this.Width = size
@@ -40,8 +45,10 @@ type ImageSource(image: Image) =
     
     interface IImageSource with
         member this.Draw(pos, tint) =
-            let tex = cachedTex.Value
-            DrawTextureV(tex, pos, tint)
+            fun _ ->
+                let tex = cachedTex.Value
+                DrawTextureV(tex, pos, tint)
+            |> withScissor
             
         member this.Height = image.Height
         member this.Width = image.Width
@@ -63,6 +70,6 @@ type ImageSource(image: Image) =
 module EmptySource =
     let emptySource =
         { new IImageSource with
-            member this.Draw(_, _) = ()
+            member this.Draw(_, _)= fun _ -> ()
             member this.Height = 0
             member this.Width = 0 }

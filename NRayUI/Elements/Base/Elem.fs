@@ -1,17 +1,14 @@
 ﻿namespace NRayUI.Elements
 
-open System
 open System.Numerics
 open Aether
 open Aether.Operators
-open Microsoft.Extensions.DependencyInjection
-open NRayUI
-open NRayUI.Loader
 open NRayUI.Modifier
 open NRayUI.Positioning
-open NRayUI.RenderingUtils
+open NRayUI.RenderBase
 open NRayUI.Utils
-open Raylib_CSharp.Camera.Cam2D
+open NRayUI.Constants
+open NRayUI.Field
 open Raylib_CSharp.Colors
 open type Raylib_CSharp.Rendering.Graphics
 open type Raylib_CSharp.Fonts.TextManager
@@ -22,18 +19,6 @@ open Raylib_CSharp.Transformations
 type IElem =
     abstract member Render: RenderingContext -> unit
     abstract member Update: UpdateContext -> IElem
-and RenderingContext = {
-    Camera: Camera2D
-    RenderTargetSize: Vector2
-    CurrentPosition: Vector2
-    ClipRegion: Rectangle option
-    IsDebugMode: bool
-    Resources: Resources
-    Services: ServiceProvider
-}
-and UpdateContext = {
-    Event: EventHandler // TODO: Implement event system
-}
 
 [<AutoOpen>]
 module Elem =
@@ -45,22 +30,28 @@ module Elem =
         BorderWidth: float32
         CornerRadius: Corners
         Smoothness: int
-    } with
+    } with         
         interface IElem with
             member this.Render(ctx) =
                 let pos = ctx.CurrentPosition
                 let rec_ = Rectangle(pos.X, pos.Y, this.Layout.Width, this.Layout.Height)
-                DrawRectangleCustomRounded
-                    rec_
-                    this.CornerRadius
-                    this.Smoothness
-                    this.BackgroundColor
-                DrawRectangleCustomRoundedLines 
-                    rec_
-                    this.CornerRadius
-                    this.BorderWidth
-                    this.Smoothness
-                    this.BorderColor
+                let render = [
+                    drawRectangleCustomRounded
+                        rec_
+                        this.CornerRadius
+                        this.Smoothness
+                        this.BackgroundColor
+                    |> withScissor
+                    drawRectangleCustomRoundedLines
+                        rec_
+                        this.CornerRadius
+                        this.BorderWidth
+                        this.Smoothness
+                        this.BorderColor
+                    |> withScissor
+                ]
+                
+                ctx +>> render
 
             member this.Update _ = this
             
@@ -70,16 +61,32 @@ module Elem =
         interface IWithLayout<Box> with
             member this.SetLayout(layout) = { this with Layout = layout }
             
+        member this.GetScissorRange(pos: Vector2) =
+            let borderOffsetXY, borderOffsetWH =
+                if this.BorderWidth > 1f then
+                    this.BorderWidth / 2f,
+                    this.BorderWidth * 2f
+                else
+                    this.BorderWidth,
+                    this.BorderWidth
+            Rectangle
+                (pos.X + borderOffsetXY,
+                 pos.Y + borderOffsetXY,
+                 this.Layout.Width - borderOffsetWH,
+                 this.Layout.Height - borderOffsetWH)
+            
         static member private DefaultLazy =
             lazy {
-              Layout = createLayout (Vector2(0f, 0f)) 100.0f 100.0f
+              Layout = createLayout (Vector2(0f, 0f))
+                           DefaultLayoutSize
+                           DefaultLayoutSize
               BackgroundColor = Color.White
               BorderColor = Color.Black
               BorderWidth = 1.0f
               CornerRadius = createCorners 0f
-              Smoothness = Constants.DefaultSmoothCircleSegments }
+              Smoothness = DefaultSmoothCircleSegments }
             
-        static member Default =
+        static member Default with get () = 
             Box.DefaultLazy.Force()
     
     [<Interface>]
@@ -178,14 +185,22 @@ module Elem =
                     { Box.Default with
                         Layout = layout
                         BackgroundColor = this.BackgroundColor
-                        BorderColor = Color.Blank })
+                        BorderWidth = 0f })
         
         interface IElem with
             member this.Render(ctx) =
                 let pos = ctx.CurrentPosition
                 let box = this.CreateBoxMem pos
-                (box :> IElem).Render(ctx)
-                DrawTextEx(this.GetFont(), this.Content, pos, this.FontSize, this.Spacing, this.Color)
+                    
+                let render = [
+                    (box :> IElem).Render
+                    drawText (this.GetFont()) this.Content pos this.FontSize this.Spacing this.Color
+                    |> withScissor
+                ]
+                    
+                { ctx with
+                    ScissorRegion = box.GetScissorRange pos <&&?> ctx.ScissorRegion }
+                +>> render
 
             member this.Update _ = this
             
@@ -198,7 +213,7 @@ module Elem =
               BackgroundColor = Color.Blank
               Spacing = 1.0f }
             
-        static member Default =
+        static member Default with get() =
             Text.DefaultLazy.Force()
     
     [<Interface>]

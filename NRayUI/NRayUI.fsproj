@@ -3,6 +3,8 @@
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+        <Tailcalls>true</Tailcalls> <!-- .tail annotations always emitted for this binary, even in debug mode -->
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,8 +19,7 @@
         <Compile Include="Camera.fs" />
         <Compile Include="Loader.fs" />
         <Compile Include="Config.fs" />
-        <Compile Include="RlGlUtils.fs" />
-        <Compile Include="RenderingUtils.fs" />
+        <Compile Include="RenderBase.fs" />
         <Compile Include="Elements\Base\Elem.fs" />
         <Compile Include="Elements\Base\Label.fs" />
         <Compile Include="Elements\Base\Panel.fs" />

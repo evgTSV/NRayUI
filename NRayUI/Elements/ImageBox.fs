@@ -3,6 +3,7 @@
 open System.Numerics
 open NRayUI.Elements.EmptySource
 open NRayUI.Modifier
+open NRayUI.Field
 open Raylib_CSharp.Colors
 open type Raylib_CSharp.Rendering.Graphics
 
@@ -23,7 +24,12 @@ type ImageBox = {
             let offset =
                 Vector2(layout.Padding.Left, layout.Padding.Top)
                 + Vector2(borderOffset)
-            this.Image.Draw(pos + offset, this.Tint)
+                
+            let render =
+                this.Image.Draw(pos + offset, this.Tint)
+            { ctx with
+                ScissorRegion = this.Box.GetScissorRange pos <&&?> ctx.ScissorRegion }
+            |> render
             
         member this.Update _ = this
     
@@ -39,18 +45,18 @@ type ImageBox = {
     interface IWithBox<ImageBox> with
         member this.SetBox(box) = { this with Box = box }
         
-    static member DefaultLazy =
+    static member private DefaultLazy =
         lazy (
             let box = Box.Default
             { Image = emptySource
               Tint = Color.RayWhite
               Box = box }
         )
-    static member inline Default() = 
+    static member Default with get() = 
         ImageBox.DefaultLazy.Force()
  
 /// Represents the simple image without difficult logic (editing, scaling, etc.)
 [<RequireQualifiedAccess>]       
 module ImageBox =
     let create (attributes: (ImageBox -> ImageBox) list) : ImageBox =
-        attributes |> List.fold (fun acc attr -> attr acc) (ImageBox.Default())
+        attributes |> List.fold (fun acc attr -> attr acc) ImageBox.Default

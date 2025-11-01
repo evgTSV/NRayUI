@@ -16,6 +16,8 @@ type Canvas = {
         
     interface IElem with
         member this.Render(ctx) =
+            failwith "Not ready for rendering yet! (While use StackPanel)"
+            
             (this.Box :> IElem).Render(ctx)
             
             let pos = ctx.CurrentPosition
@@ -60,7 +62,7 @@ type Canvas = {
             { Children = []
               Box = box }
         )
-    static member Default = 
+    static member Default with get() = 
         Canvas.DefaultLazy.Force()
 
 /// Canvas - panel, where children layout by the absolute coordinated from canvas borders
