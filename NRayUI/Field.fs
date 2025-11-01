@@ -6,7 +6,7 @@ open Raylib_CSharp.Transformations
 type Orientation =
     | Horizontal
     | Vertical
-    
+
 /// <summary>
 /// Find intersection of two rectangles
 /// </summary>
@@ -19,11 +19,10 @@ let inline (<&&>) (rec1: Rectangle) (rec2: Rectangle) =
     let y1 = max rec1.Y rec2.Y
     let x2 = min (rec1.X + rec1.Width) (rec2.X + rec2.Width)
     let y2 = min (rec1.Y + rec1.Height) (rec2.Y + rec2.Height)
-    
-    let inline intersectionExists() =
-        x2 > x1 && y2 > y1
-    
-    if intersectionExists() then
+
+    let inline intersectionExists () = x2 > x1 && y2 > y1
+
+    if intersectionExists () then
         Some <| Rectangle(x1, y1, x2 - x1, y2 - y1)
     else
         None
@@ -45,9 +44,8 @@ let inline (<!&&>) (rec1: Rectangle) (rec2: Rectangle) =
 /// <param name="rec2">Second rectangle</param>
 /// <returns>Rectangle that is intersection of two rectangles</returns>
 /// <remarks>Rec2 is top-priority, if there isn't intersection then returns Rec2</remarks>
-let inline (<&&!>) (rec1: Rectangle) (rec2: Rectangle) =
-    rec2 <!&&> rec1
-        
+let inline (<&&!>) (rec1: Rectangle) (rec2: Rectangle) = rec2 <!&&> rec1
+
 /// <summary>
 /// Find intersection of two rectangles
 /// </summary>
@@ -57,7 +55,5 @@ let inline (<&&!>) (rec1: Rectangle) (rec2: Rectangle) =
 /// <remarks>If rec2 is None then intersection equals rec1 else equals intersection with rec2 priority</remarks>
 let inline (<&&?>) (rec1: Rectangle) (rec2: Rectangle option) =
     match rec2 with
-    | Some rec2 ->
-        rec1 <&&!> rec2 |> Some
-    | None ->
-        Some rec1
+    | Some rec2 -> rec1 <&&!> rec2 |> Some
+    | None -> Some rec1

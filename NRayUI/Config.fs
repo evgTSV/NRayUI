@@ -22,6 +22,6 @@ type Config = {
 //     let mutable config: Config = {
 //         Window = window
 //         Services = ServiceCollection()
-//         
-//         
+//
+//
 //     }

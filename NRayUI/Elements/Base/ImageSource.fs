@@ -14,17 +14,16 @@ type IImageSource =
     abstract Height: float
     abstract Width: float
     abstract Draw: pos: Vector2 * tint: Color -> RenderAction
-    
+
 type TextureSource(texture: Texture2D) =
     interface IImageSource with
         member this.Draw(pos, tint) =
-            fun _ ->
-                DrawTextureV(texture, pos, tint)
+            fun _ -> DrawTextureV(texture, pos, tint)
             |> withScissor
-            
+
         member this.Height = texture.Height
         member this.Width = texture.Width
-            
+
 type IconSource(icon: Icon, size: int) =
     interface IImageSource with
         member this.Draw(pos, tint) =
@@ -35,41 +34,44 @@ type IconSource(icon: Icon, size: int) =
             }
             |> drawIcon pos
             |> withScissor
-            
+
         member this.Height = size
         member this.Width = size
-       
+
 type ImageSource(image: Image) =
     let cachedTex = lazy Texture2D.LoadFromImage(image)
     let mutable disposed = false
-    
+
     interface IImageSource with
         member this.Draw(pos, tint) =
             fun _ ->
                 let tex = cachedTex.Value
                 DrawTextureV(tex, pos, tint)
             |> withScissor
-            
+
         member this.Height = image.Height
         member this.Width = image.Width
-        
+
     interface IDisposable with
         member this.Dispose() =
             if not disposed then
                 disposed <- true
+
                 if cachedTex.IsValueCreated then
                     cachedTex.Value.Unload()
+
                 GC.SuppressFinalize()
-                
+
     override this.Finalize() =
         try
             (this :> IDisposable).Dispose()
-        with
-        | _ -> ()
-        
+        with _ ->
+            ()
+
 module EmptySource =
     let emptySource =
         { new IImageSource with
-            member this.Draw(_, _)= fun _ -> ()
+            member this.Draw(_, _) = fun _ -> ()
             member this.Height = 0
-            member this.Width = 0 }
+            member this.Width = 0
+        }

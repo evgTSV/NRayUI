@@ -1,0 +1,8 @@
+﻿Scripts/
+docs/
+eng/
+fcs-samples/
+setup/
+*.Tests/
+*.Examples/
+NRayUI/Icons.fs

@@ -7,6 +7,7 @@ type Sides = {
     Bottom: float32
     Left: float32
 } with
+
     static member zero = Unchecked.defaultof<Sides>
 
 [<Struct>]
@@ -16,6 +17,7 @@ type Corners = {
     BottomRight: float32
     BottomLeft: float32
 } with
+
     static member zero = Unchecked.defaultof<Corners>
 
 [<AutoOpen>]
@@ -26,7 +28,7 @@ module Alignment =
         | CenterV
         | Bottom
         | Custom of float32
-        
+
         member this.ToFloat() =
             match this with
             | Top -> 0.0f
@@ -40,7 +42,7 @@ module Alignment =
         | CenterH
         | End
         | Custom of float32
-        
+
         member this.ToFloat() =
             match this with
             | Start -> 0.0f
@@ -53,18 +55,39 @@ module Alignment =
         Vertical: Vertical
         Horizontal: Horizontal
     }
-    
+
     let TopStart = { Vertical = Top; Horizontal = Start }
     let TopCenter = { Vertical = Top; Horizontal = CenterH }
     let TopEnd = { Vertical = Top; Horizontal = End }
-    let CenterStart = { Vertical = CenterV; Horizontal = Start }
-    let Center = { Vertical = CenterV; Horizontal = CenterH }
+
+    let CenterStart = {
+        Vertical = CenterV
+        Horizontal = Start
+    }
+
+    let Center = {
+        Vertical = CenterV
+        Horizontal = CenterH
+    }
+
     let CenterEnd = { Vertical = CenterV; Horizontal = End }
-    let BottomStart = { Vertical = Bottom; Horizontal = Start }
-    let BottomCenter = { Vertical = Bottom; Horizontal = CenterH }
+
+    let BottomStart = {
+        Vertical = Bottom
+        Horizontal = Start
+    }
+
+    let BottomCenter = {
+        Vertical = Bottom
+        Horizontal = CenterH
+    }
+
     let BottomEnd = { Vertical = Bottom; Horizontal = End }
-    let CustomAlignment v h =
-        { Vertical = Vertical.Custom v; Horizontal = Horizontal.Custom h }
+
+    let CustomAlignment v h = {
+        Vertical = Vertical.Custom v
+        Horizontal = Horizontal.Custom h
+    }
 
 type Offset = Sides
 type Margin = Sides
