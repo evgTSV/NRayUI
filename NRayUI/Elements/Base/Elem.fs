@@ -10,8 +10,6 @@ open NRayUI.Utils
 open NRayUI.Constants
 open NRayUI.Field
 open Raylib_CSharp.Colors
-open type Raylib_CSharp.Rendering.Graphics
-open type Raylib_CSharp.Fonts.TextManager
 open Raylib_CSharp.Fonts
 open Raylib_CSharp.Transformations
 
@@ -180,7 +178,7 @@ module Elem =
             lazyMemoize
                 (Vector2Comparer())
                 (fun (pos: Vector2) ->
-                    let textMeasure = MeasureTextEx(this.GetFont(), this.Content, this.FontSize, this.Spacing)
+                    let textMeasure = measureText (this.GetFont()) this.Content this.FontSize this.Spacing
                     let layout = createLayout pos textMeasure.X textMeasure.Y
                     { Box.Default with
                         Layout = layout

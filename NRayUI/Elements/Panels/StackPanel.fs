@@ -5,7 +5,6 @@ open NRayUI.Constants
 open NRayUI.Elements
 open NRayUI.Field
 open NRayUI.Modifier
-open type Raylib_CSharp.Rendering.Graphics
 
 type StackPanel = {
     Orientation: Orientation

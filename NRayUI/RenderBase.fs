@@ -15,6 +15,7 @@ open Raylib_CSharp.Textures
 open Raylib_CSharp.Rendering
 open Raylib_CSharp.Rendering.Gl
 open type Raylib_CSharp.Rendering.Graphics
+open type Raylib_CSharp.Fonts.TextManager
 open Raylib_CSharp.Transformations
 
 type RenderingContext = {
@@ -33,12 +34,10 @@ and UpdateContext = {
 type RenderAction = RenderingContext -> unit
 type RenderHandler = RenderAction -> RenderingContext -> unit
 
-let compose (a1: RenderAction) (a2: RenderAction): RenderAction =
+/// Compose two render actions
+let inline (>+>) (a1: RenderAction) (a2: RenderAction)=
     fun ctx ->
         a1 ctx; a2 ctx
-
-/// Compose two render functions (essentially, for inner using, instead of this use +>>)
-let (>>->>) = compose
 
 /// <summary>
 /// Execute render actions
@@ -389,8 +388,16 @@ let drawRectangleCustomRounded
                     drawCircleSectorEx center radius startAngle endAngle segments color ctx
             ))
     
-    drawRect >>->> drawCorners
-    
+    drawRect >+> drawCorners
+ 
+let rec measureText
+    (font: Font)
+    (content: string)
+    (fontSize: float32)
+    (spacing: float32)
+    =
+        MeasureTextEx(font, content, fontSize, spacing)
+        
 let drawText
     (font: Font)
     (text: string)
