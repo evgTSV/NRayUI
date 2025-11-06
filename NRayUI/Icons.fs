@@ -6,7 +6,6 @@
 module NRayUI.Icons
 
 open System
-open System.Numerics
 open Raylib_CSharp.Colors
 
 let IconSize = 16 // Size of icons in pixels (squared)

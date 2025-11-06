@@ -1,5 +1,6 @@
 
 open System
+open NRayUI
 open NRayUI.Components.UIConfigurator
 open NRayUI.Elements
 open NRayUI.Elements.Panels
@@ -12,7 +13,6 @@ open NRayUI.Positioning
 open NRayUI.UIRendering
 open Raylib_CSharp.Colors
 open type Raylib_CSharp.Rendering.Graphics
-open Raylib_CSharp.Windowing
 
 let test (ctx: RenderingContext) =
     StackPanel.create [
@@ -70,16 +70,15 @@ let test (ctx: RenderingContext) =
             ]
         ]
     ]
-    
-let config =
-         ConfigFlags.ResizableWindow |||
-         ConfigFlags.Msaa4XHint |||
-         ConfigFlags.VSyncHint |||
-         ConfigFlags.AlwaysRunWindow
 
-let window = {
-    Title = "NRayUI Example"
-    WindowSizePx = (800, 800)
-}
-         
-test |> startRendering window config
+let builder = UIBuilder()
+
+%builder
+    .WithWindow({
+        Title = "NRayUI example"
+        WindowSizePx = (800, 800)
+    })
+    
+let app = builder.Build()
+
+test |> startRendering app

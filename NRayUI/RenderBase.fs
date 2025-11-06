@@ -25,8 +25,12 @@ type RenderingContext = {
     ScissorRegion: Rectangle option
     IsDebugMode: bool
     Resources: Resources
-    Services: ServiceProvider
-}
+    ServiceProvider: ServiceProvider
+} with
+
+    interface IServiceProvider with
+        member this.GetService(serviceType) =
+            this.ServiceProvider.GetService serviceType
 
 and UpdateContext = {
     Event: EventHandler // TODO: Implement event system

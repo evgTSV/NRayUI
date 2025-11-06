@@ -2,11 +2,8 @@ module NRayUI.UIRendering
 
 open System.Numerics
 open JetBrains.Lifetimes
-open Microsoft.Extensions.DependencyInjection
 open NRayUI.Camera
-open NRayUI.Elements
 open NRayUI.Loader
-open NRayUI.Modifier
 open NRayUI.RenderBase
 open NRayUI.Window
 open Raylib_CSharp.Colors
@@ -14,8 +11,6 @@ open Raylib_CSharp
 open Raylib_CSharp.Rendering
 open type Raylib_CSharp.Rendering.Graphics
 open Raylib_CSharp.Windowing
-
-type View<'a when 'a :> IElem and IWithLayout<'a>> = RenderingContext -> 'a
 
 let inline renderPrologue (ctx: RenderingContext) =
     BeginDrawing()
@@ -35,13 +30,13 @@ let render (view: View<'a>) (ctx: RenderingContext) =
     renderChildWithLayout view ctx
     renderEpilogue ()
 
-let startRendering (windowConfig: WindowConfig) (config: ConfigFlags) (view: View<'a>) =
+let startRendering (app: UIApp) (view: View<'a>) =
 
     use lifetimeDef = new LifetimeDefinition()
     let lifetime = lifetimeDef.Lifetime
 
-    Raylib.SetConfigFlags(config)
-    Window.Init(windowConfig)
+    Raylib.SetConfigFlags(app.Flags)
+    Window.Init(app.Window)
 
     if (Window.IsReady() |> not) then
         failwith
@@ -61,7 +56,7 @@ let startRendering (windowConfig: WindowConfig) (config: ConfigFlags) (view: Vie
         ScissorRegion = None
         IsDebugMode = false
         Resources = Resources(lifetime)
-        Services = ServiceCollection().BuildServiceProvider()
+        ServiceProvider = app.ServiceProvider
     }
 
     let rec loop () =

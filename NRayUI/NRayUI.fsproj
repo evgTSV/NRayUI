@@ -18,7 +18,6 @@
         <Compile Include="Window.fs" />
         <Compile Include="Camera.fs" />
         <Compile Include="Loader.fs" />
-        <Compile Include="Config.fs" />
         <Compile Include="RenderBase.fs" />
         <Compile Include="Elements\Base\Elem.fs" />
         <Compile Include="Elements\Base\Label.fs" />
@@ -27,6 +26,7 @@
         <Compile Include="Elements\Panels\Canvas.fs" />
         <Compile Include="Elements\Panels\StackPanel.fs" />
         <Compile Include="Elements\ImageBox.fs" />
+        <Compile Include="Config.fs" />
         <Compile Include="UIConfigurator.fs" />
         <Compile Include="UIRendering.fs" />
     </ItemGroup>
@@ -35,6 +35,7 @@
       <PackageReference Include="Aether" Version="8.3.1" />
       <PackageReference Include="JetBrains.Lifetimes" Version="2025.3.1" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.10" />
       <PackageReference Include="Raylib-CSharp" Version="5.0.0" />
     </ItemGroup>
 
