@@ -4,8 +4,10 @@ open System
 open System.Numerics
 open Microsoft.Extensions.DependencyInjection
 open NRayUI.Icons
+open NRayUI.Input
 open NRayUI.Loader
 open NRayUI.Positioning
+open NRayUI.Time
 open NRayUI.Utils
 open Raylib_CSharp
 open Raylib_CSharp.Camera.Cam2D
@@ -33,8 +35,16 @@ type RenderingContext = {
             this.ServiceProvider.GetService serviceType
 
 and UpdateContext = {
-    Event: EventHandler // TODO: Implement event system
-}
+    // Event: Event TODO: Implement event system
+    Input: InputEvent[]
+    Resources: Resources
+    ServiceProvider: ServiceProvider
+    TickEngine: TickEngine
+} with
+
+    interface IServiceProvider with
+        member this.GetService(serviceType) =
+            this.ServiceProvider.GetService serviceType
 
 type RenderAction = RenderingContext -> unit
 type RenderHandler = RenderAction -> RenderingContext -> unit

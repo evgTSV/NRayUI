@@ -11,7 +11,7 @@ open Raylib_CSharp.Colors
 open Raylib_CSharp.Rendering
 open Raylib_CSharp.Windowing
 
-type View<'a when 'a :> IElem and IWithLayout<'a>> = RenderingContext -> 'a
+type View<'a when 'a :> IElem and IWithLayout<'a>> = UpdateContext -> 'a
 
 type DebugOptions = {
     RecordRenders: bool
@@ -81,5 +81,5 @@ type UIBuilder() =
 [<AutoOpen>]
 module UIBuilder =
 
-    /// Unary operator for ui building chain and ignore result
+    /// Unary operator for ui building chain to ignore result
     let inline (~%) x = x |> ignore

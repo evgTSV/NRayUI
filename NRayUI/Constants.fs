@@ -11,3 +11,6 @@ let DefaultLayoutSize = 100f
 
 [<Literal>]
 let DefaultStackPanelSpacing = 10f
+
+[<Literal>]
+let TicksPerSecond = 10.

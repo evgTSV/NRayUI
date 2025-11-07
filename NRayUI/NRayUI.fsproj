@@ -18,6 +18,9 @@
         <Compile Include="Window.fs" />
         <Compile Include="Camera.fs" />
         <Compile Include="Loader.fs" />
+        <Compile Include="Time.fs" />
+        <Compile Include="TickEngine.fs" />
+        <Compile Include="UserInput.fs" />
         <Compile Include="RenderBase.fs" />
         <Compile Include="Elements\Base\Elem.fs" />
         <Compile Include="Elements\Base\Label.fs" />
