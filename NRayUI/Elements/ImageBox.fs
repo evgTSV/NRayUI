@@ -1,5 +1,6 @@
 namespace NRayUI.Elements
 
+open System
 open System.Numerics
 open NRayUI.Elements.EmptySource
 open NRayUI.Modifier
@@ -19,7 +20,15 @@ type ImageBox = {
             let layout = this.Box.Layout
             let borderOffset = this.Box.BorderWidth / 2f
 
-            (this.Box :> IElem).Render(ctx)
+            let layout = {
+                layout with
+                    Width = Math.Max(layout.Width, this.Image.Width - borderOffset)
+                    Height = Math.Max(layout.Height, this.Image.Height - borderOffset)
+            }
+
+            let box = { this.Box with Layout = layout }
+
+            (box :> IElem).Render(ctx)
 
             let offset =
                 Vector2(layout.Padding.Left, layout.Padding.Top) + Vector2(borderOffset)
@@ -28,7 +37,7 @@ type ImageBox = {
 
             {
                 ctx with
-                    ScissorRegion = this.Box.GetScissorRange pos <&&?> ctx.ScissorRegion
+                    ScissorRegion = box.GetScissorRange pos <&&?> ctx.ScissorRegion
             }
             |> render
 

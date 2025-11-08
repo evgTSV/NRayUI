@@ -14,37 +14,16 @@ type Canvas = {
         member this.GetChildren = this.Children
         member this.SetChildren(children) = { this with Children = children }
 
-    interface IElem with
-        member this.Render(ctx) =
-            failwith "Not ready for rendering yet! (While use StackPanel)"
+        member this.CalculateChildPos(prev, curr, i, basePos) =
+            let prev = if i > 0 then prev else Layout.Zero
 
-            (this.Box :> IElem).Render(ctx)
-
-            let pos = ctx.CurrentPosition
-
-            BeginScissorMode(
-                int pos.X,
-                int pos.Y,
-                int this.Box.Layout.Width,
-                int this.Box.Layout.Height
+            Vector2(
+                curr.Position.X + prev.Margin.Right + curr.Margin.Left,
+                curr.Position.Y + prev.Margin.Bottom + curr.Margin.Top
             )
 
-            this.Children
-            |> List.iter (fun child ->
-                match child with
-                | :? ILayoutProvider as withLayout ->
-                    let childLayout = withLayout.GetLayout
-
-                    let childPos =
-                        pos
-                        + childLayout.Position
-                        + Vector2(this.Box.Layout.Padding.Left, this.Box.Layout.Padding.Top)
-
-                    let childContext = { ctx with CurrentPosition = childPos }
-                    child.Render(childContext)
-                | _ -> child.Render(ctx))
-
-            EndScissorMode()
+    interface IElem with
+        member this.Render(ctx) = ctx |> renderPanelBase this
 
         member this.Update(ctx) = {
             this with
@@ -74,4 +53,13 @@ type Canvas = {
 [<RequireQualifiedAccess>]
 module Canvas =
     let create (attributes: (Canvas -> Canvas) list) : Canvas =
-        attributes |> List.fold (fun acc attr -> attr acc) Canvas.Default
+        let canvas = attributes |> List.fold (fun acc attr -> attr acc) Canvas.Default
+
+        {
+            canvas with
+                Children =
+                    canvas.Children
+                    |> List.sortBy (function
+                        | :? ILayoutProvider as c -> Some c.GetLayout.ZIndex
+                        | _ -> None)
+        }

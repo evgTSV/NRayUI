@@ -1,5 +1,6 @@
 
 open System
+open System.Numerics
 open NRayUI
 open NRayUI.Components.UIConfigurator
 open NRayUI.Elements
@@ -13,6 +14,7 @@ open NRayUI.Window
 open NRayUI.Positioning
 open NRayUI.UIRendering
 open Raylib_CSharp.Colors
+open Raylib_CSharp.Interact
 open type Raylib_CSharp.Rendering.Graphics
 
 let test (ctx: UpdateContext) =
@@ -121,6 +123,58 @@ let inputViewer (ctx: UpdateContext) =
         PanelSet.children
             inputs
     ]
+    
+let levelSize = Vector2(500f)
+let playerSize = 5
+let mutable playerPos = Vector2(0f, 0f)
+let mutable velocity = Vector2(0f, 0f)
+
+let handlePlayerInput (input: InputEvent) =
+    match input with
+    | KeyPressed k ->
+        match k with
+        | KeyboardKey.Up -> velocity <- velocity - Vector2(0f, 1f)
+        | KeyboardKey.Down -> velocity <- velocity + Vector2(0f, 1f)
+        | KeyboardKey.Left -> velocity <- velocity - Vector2(1f, 0f)
+        | KeyboardKey.Right -> velocity <- velocity + Vector2(1f, 0f)
+        | _ -> ()
+    | _ -> ()
+
+let updatePlayer (ctx: UpdateContext) =
+    ctx.Input
+    |> Array.iter handlePlayerInput
+    
+    let absSize = getIconAbsoluteSizes playerSize
+    let newPos = playerPos + velocity
+    playerPos <- Vector2(
+            Math.Clamp(newPos.X, 0f, levelSize.X - absSize.X),
+            Math.Clamp(newPos.Y, 0f, levelSize.Y - absSize.Y))
+    
+    if newPos <> playerPos then
+        velocity <- Vector2.Zero
+    
+    ImageBox.create [
+        ImageBoxSet.source (IconSource(Icon.Player, playerSize))
+        ImageBoxSet.tint Color.Black
+        BoxSet.backgroundColor Color.Blank
+        BoxSet.borderColor Color.Red
+        LayoutSet.width 10f
+        LayoutSet.height 10f
+        LayoutSet.position playerPos
+    ]
+
+let gameField (ctx: UpdateContext) =
+    let player = updatePlayer ctx
+    Canvas.create [
+        LayoutSet.modifiers [
+            height levelSize.Y >> width levelSize.X
+            marginScan "50"
+        ]
+        BoxSet.backgroundColor Color.DarkGreen
+        BoxSet.borderColor Color.Black
+        BoxSet.borderWidth 10f
+        PanelSet.children [ player ]
+    ]
 
 let builder = UIBuilder()
 
@@ -132,4 +186,4 @@ let builder = UIBuilder()
     
 let app = builder.Build()
 
-inputViewer |> startRendering app
+gameField |> startRendering app

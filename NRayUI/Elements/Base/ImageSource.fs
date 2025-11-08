@@ -11,8 +11,8 @@ open type Raylib_CSharp.Rendering.Graphics
 
 [<Interface>]
 type IImageSource =
-    abstract Height: float
-    abstract Width: float
+    abstract Height: float32
+    abstract Width: float32
     abstract Draw: pos: Vector2 * tint: Color -> RenderAction
 
 type TextureSource(texture: Texture2D) =
@@ -21,8 +21,8 @@ type TextureSource(texture: Texture2D) =
             fun _ -> DrawTextureV(texture, pos, tint)
             |> withScissor
 
-        member this.Height = texture.Height
-        member this.Width = texture.Width
+        member this.Height = texture.Height |> float32
+        member this.Width = texture.Width |> float32
 
 type IconSource(icon: Icon, size: int) =
     interface IImageSource with
@@ -35,8 +35,8 @@ type IconSource(icon: Icon, size: int) =
             |> drawIcon pos
             |> withScissor
 
-        member this.Height = size
-        member this.Width = size
+        member this.Height = (getIconAbsoluteSizes size).Y
+        member this.Width = (getIconAbsoluteSizes size).X
 
 type ImageSource(image: Image) =
     let cachedTex = lazy Texture2D.LoadFromImage(image)
@@ -49,8 +49,8 @@ type ImageSource(image: Image) =
                 DrawTextureV(tex, pos, tint)
             |> withScissor
 
-        member this.Height = image.Height
-        member this.Width = image.Width
+        member this.Height = image.Height |> float32
+        member this.Width = image.Width |> float32
 
     interface IDisposable with
         member this.Dispose() =
@@ -72,6 +72,6 @@ module EmptySource =
     let emptySource =
         { new IImageSource with
             member this.Draw(_, _) = fun _ -> ()
-            member this.Height = 0
-            member this.Width = 0
+            member this.Height = 0f
+            member this.Width = 0f
         }

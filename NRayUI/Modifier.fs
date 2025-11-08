@@ -22,6 +22,17 @@ module Modifier =
         static member WithModifiers (modifiers: (Layout -> Layout) List) (layout: Layout) : Layout =
             modifiers |> List.fold (fun acc modifier -> modifier acc) layout
 
+        static member Zero = {
+            Position = Vector2.Zero
+            Width = 0f
+            Height = 0f
+            Margin = Margin.zero
+            Padding = Padding.zero
+            Offset = Offset.zero
+            Alignment = None
+            ZIndex = 0
+        }
+
     [<Interface>]
     type ILayoutProvider =
         abstract member GetLayout: Layout

@@ -6,6 +6,7 @@
 module NRayUI.Icons
 
 open System
+open System.Numerics
 open Raylib_CSharp.Colors
 
 let IconSize = 16 // Size of icons in pixels (squared)
@@ -549,3 +550,6 @@ let getIconData (icon: Icon) =
     
 let bitCheck (value: uint32) (bit: int) =
     (value &&& (1u <<< bit)) <> 0u
+
+let getIconAbsoluteSizes (relativeSize: int) =
+    Vector2 ((relativeSize |> float32) * 16f)

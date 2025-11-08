@@ -7,7 +7,6 @@ open NRayUI.Icons
 open NRayUI.Input
 open NRayUI.Loader
 open NRayUI.Positioning
-open NRayUI.Time
 open NRayUI.Utils
 open Raylib_CSharp
 open Raylib_CSharp.Camera.Cam2D

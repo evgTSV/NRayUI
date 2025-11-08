@@ -17,78 +17,32 @@ type StackPanel = {
         member this.GetChildren = this.Children
         member this.SetChildren(children) = { this with Children = children }
 
+        member this.CalculateChildPos(prev, curr, i, basePos) =
+            if i > 0 then
+                match this.Orientation with
+                | Orientation.Vertical ->
+                    let offset =
+                        Vector2(
+                            0f,
+                            prev.Height + prev.Margin.Bottom + curr.Margin.Top + this.Spacing
+                        )
+
+                    basePos <- basePos + offset
+                    offset
+                | Orientation.Horizontal ->
+                    let offset =
+                        Vector2(
+                            prev.Width + prev.Margin.Right + curr.Margin.Left + this.Spacing,
+                            0f
+                        )
+
+                    basePos <- basePos + offset
+                    offset
+            else
+                Vector2.Zero
+
     interface IElem with
-        member this.Render(ctx) =
-            let layout = (this :> ILayoutProvider).GetLayout
-
-            let ctx = {
-                ctx with
-                    CurrentPosition =
-                        ctx.CurrentPosition + Vector2(layout.Margin.Left, layout.Margin.Top)
-            }
-
-            (this.Box :> IElem).Render(ctx)
-
-            let borderOffset = this.Box.BorderWidth
-            let mutable pos = ctx.CurrentPosition + Vector2() + Vector2(borderOffset)
-
-            let ctx = {
-                ctx with
-                    ScissorRegion = this.Box.GetScissorRange pos <&&?> ctx.ScissorRegion
-            }
-
-            for i in 0 .. this.Children.Length - 1 do
-                let child = this.Children[i]
-
-                match child with
-                | :? ILayoutProvider as withLayout ->
-                    let prevLayout =
-                        if i > 0 then
-                            let prevChild = this.Children[i - 1]
-
-                            match prevChild with
-                            | :? ILayoutProvider as prevWithLayout -> prevWithLayout.GetLayout
-                            | _ -> layout
-                        else
-                            layout
-
-                    let childLayout = withLayout.GetLayout
-
-                    let childPos =
-                        pos
-                        + Vector2(layout.Padding.Left, layout.Padding.Top)
-                        + if i > 0 then
-                              match this.Orientation with
-                              | Orientation.Vertical ->
-                                  let offset =
-                                      Vector2(
-                                          0f,
-                                          prevLayout.Height
-                                          + prevLayout.Margin.Bottom
-                                          + childLayout.Margin.Top
-                                          + this.Spacing
-                                      )
-
-                                  pos <- pos + offset
-                                  offset
-                              | Orientation.Horizontal ->
-                                  let offset =
-                                      Vector2(
-                                          prevLayout.Width
-                                          + prevLayout.Margin.Right
-                                          + childLayout.Margin.Left
-                                          + this.Spacing,
-                                          0f
-                                      )
-
-                                  pos <- pos + offset
-                                  offset
-                          else
-                              Vector2.Zero
-
-                    let childContext = { ctx with CurrentPosition = childPos }
-                    child.Render(childContext)
-                | _ -> child.Render(ctx)
+        member this.Render(ctx) = ctx |> renderPanelBase this
 
         member this.Update(ctx) = {
             this with

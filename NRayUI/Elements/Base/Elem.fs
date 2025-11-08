@@ -88,12 +88,10 @@ module Elem =
 
         static member Default = Box.DefaultLazy.Force()
 
-    [<Interface>]
-    type IBoxProvider =
+    and [<Interface>] IBoxProvider =
         abstract member GetBox: Box
 
-    [<Interface>]
-    type IWithBox<'a> =
+    and [<Interface>] IWithBox<'a> =
         inherit IBoxProvider
         abstract member SetBox: Box -> 'a
 
