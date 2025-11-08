@@ -64,7 +64,7 @@ module Elem =
         member this.GetScissorRange(pos: Vector2) =
             let borderOffsetXY, borderOffsetWH =
                 if this.BorderWidth > 1f then
-                    this.BorderWidth / 2f, this.BorderWidth * 2f
+                    this.BorderWidth / 2f, this.BorderWidth
                 else
                     this.BorderWidth, this.BorderWidth
 
