@@ -1,5 +1,6 @@
 namespace NRayUI.Elements
 
+open System
 open System.Numerics
 open NRayUI.Elements.Elem
 open NRayUI.Modifier
@@ -14,7 +15,17 @@ type Label = {
         member this.Render(ctx) =
             let pos = ctx.CurrentPosition
             let layout = (this :> ILayoutProvider).GetLayout
-            (this.Box :> IElem).Render(ctx)
+            let borderOffset = this.Box.BorderWidth / 2f
+
+            let layout = {
+                layout with
+                    Width = Math.Max(layout.Width, this.Text.Width - borderOffset)
+                    Height = Math.Max(layout.Height, this.Text.Height - borderOffset)
+            }
+
+            let box = { this.Box with Layout = layout }
+
+            (box :> IElem).Render(ctx)
 
             (this.Text :> IElem)
                 .Render(
@@ -24,7 +35,7 @@ type Label = {
                                 pos
                                 + Vector2(layout.Padding.Left, layout.Padding.Top)
                                 + Vector2(0f, (layout.Height - this.Text.FontSize) / 2f)
-                            ScissorRegion = this.Box.GetScissorRange pos <&&?> ctx.ScissorRegion
+                            ScissorRegion = box.GetScissorRange pos <&&?> ctx.ScissorRegion
                     }
                 )
 

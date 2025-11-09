@@ -202,6 +202,10 @@ module Elem =
                         BorderWidth = 0f
                 })
 
+        member this.Width = (this.CreateBoxMem(Vector2(0f))).Layout.Width
+
+        member this.Height = (this.CreateBoxMem(Vector2(0f))).Layout.Height
+
         interface IElem with
             member this.Render(ctx) =
                 let pos = ctx.CurrentPosition

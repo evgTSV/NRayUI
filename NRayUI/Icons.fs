@@ -548,8 +548,8 @@ let getIconData (icon: Icon) =
     let span = Span(IconsData.guiIcons)
     span.Slice(index * IconDataElements, IconDataElements)
     
-let bitCheck (value: uint32) (bit: int) =
+let inline bitCheck (value: uint32) (bit: int) =
     (value &&& (1u <<< bit)) <> 0u
 
-let getIconAbsoluteSizes (relativeSize: int) =
+let inline getIconAbsoluteSizes (relativeSize: int) =
     Vector2 ((relativeSize |> float32) * 16f)

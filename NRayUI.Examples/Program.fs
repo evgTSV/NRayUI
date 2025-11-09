@@ -16,6 +16,7 @@ open NRayUI.UIRendering
 open Raylib_CSharp.Colors
 open Raylib_CSharp.Interact
 open type Raylib_CSharp.Rendering.Graphics
+open Raylib_CSharp.Transformations
 
 let test (ctx: UpdateContext) =
     StackPanel.create [
@@ -126,8 +127,16 @@ let inputViewer (ctx: UpdateContext) =
     
 let levelSize = Vector2(500f)
 let playerSize = 5
+let coinSize = 2
+
 let mutable playerPos = Vector2(0f, 0f)
+
+let getCoinPos() = Vector2(Random.Shared.Next(0, levelSize.X - (getIconAbsoluteSizes coinSize).X - 1f |> int) |> float32)
+let mutable coinPos = getCoinPos()
+    
 let mutable velocity = Vector2(0f, 0f)
+let mutable score = 0
+
 
 let handlePlayerInput (input: InputEvent) =
     match input with
@@ -139,19 +148,44 @@ let handlePlayerInput (input: InputEvent) =
         | KeyboardKey.Right -> velocity <- velocity + Vector2(1f, 0f)
         | _ -> ()
     | _ -> ()
+    
+let checkCollision (newPos: Vector2) =
+    let playerSizeAbs = getIconAbsoluteSizes playerSize
+    let coinSizeAbs = getIconAbsoluteSizes coinSize
+    
+    playerPos <- Vector2(
+            Math.Clamp(newPos.X, 0f, levelSize.X - playerSizeAbs.X - 1f),
+            Math.Clamp(newPos.Y, 0f, levelSize.Y - playerSizeAbs.Y - 1f))
+    
+    let playerRect = Rectangle(
+            playerPos.X,
+            playerPos.Y,
+            playerSizeAbs.X,
+            playerSizeAbs.Y
+        )
+    
+    let coinRect = Rectangle(
+            coinPos.X,
+            coinPos.Y,
+            coinSizeAbs.X,
+            coinSizeAbs.Y
+        )
+    
+    match playerRect <&&> coinRect with
+    | Some _ ->
+        score <- score + 10
+        coinPos <- getCoinPos()
+    | None -> ()
+    
+    if newPos <> playerPos then
+        velocity <- Vector2.Zero
 
 let updatePlayer (ctx: UpdateContext) =
     ctx.Input
     |> Array.iter handlePlayerInput
     
-    let absSize = getIconAbsoluteSizes playerSize
     let newPos = playerPos + velocity
-    playerPos <- Vector2(
-            Math.Clamp(newPos.X, 0f, levelSize.X - absSize.X - 1f),
-            Math.Clamp(newPos.Y, 0f, levelSize.Y - absSize.Y - 1f))
-    
-    if newPos <> playerPos then
-        velocity <- Vector2.Zero
+    checkCollision newPos
     
     ImageBox.create [
         ImageBoxSet.source (IconSource(Icon.Player, playerSize))
@@ -161,6 +195,7 @@ let updatePlayer (ctx: UpdateContext) =
         LayoutSet.width 10f
         LayoutSet.height 10f
         LayoutSet.position playerPos
+        LayoutSet.zIndex 1
     ]
 
 let gameField (ctx: UpdateContext) =
@@ -173,7 +208,26 @@ let gameField (ctx: UpdateContext) =
         BoxSet.backgroundColor Color.DarkGreen
         BoxSet.borderColor Color.Black
         BoxSet.borderWidth 10f
-        PanelSet.children [ player ]
+        PanelSet.children [
+            player
+            ImageBox.create [
+                ImageBoxSet.source (IconSource(Icon.Coin, coinSize))
+                ImageBoxSet.tint Color.Black
+                BoxSet.backgroundColor Color.Blank
+                BoxSet.borderColor Color.Red
+                LayoutSet.width 10f
+                LayoutSet.height 10f
+                LayoutSet.position coinPos
+            ]
+            Label.create [
+                LayoutSet.modifiers [
+                    height 20f
+                    position (Vector2(10f))
+                ]
+                LayoutSet.zIndex 2
+                TextSet.content $"Score: {score}"
+            ]
+        ]
     ]
 
 let builder = UIBuilder()
