@@ -34,6 +34,10 @@ module LayoutSet =
     let height (height: float32) =
         (LayoutLenses.height, height) ||> Optic.set
 
+    /// Sets width and height of a layout
+    let size (value: Vector2) =
+        width value.X >> height value.Y
+
     /// Sets the alignment of a layout.
     let alignment (alignment: Alignment) =
         (LayoutLenses.alignment, alignment) ||> Optic.set

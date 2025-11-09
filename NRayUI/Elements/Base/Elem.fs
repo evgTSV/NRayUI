@@ -33,7 +33,14 @@ module Elem =
         interface IElem with
             member this.Render(ctx) =
                 let pos = ctx.CurrentPosition
-                let rec_ = Rectangle(pos.X, pos.Y, this.Layout.Width, this.Layout.Height)
+
+                let rec_ =
+                    Rectangle(
+                        pos.X,
+                        pos.Y,
+                        this.Layout.Width + this.BorderWidth,
+                        this.Layout.Height + this.BorderWidth
+                    )
 
                 let render = [
                     drawRectangleCustomRounded
@@ -62,17 +69,17 @@ module Elem =
             member this.SetLayout(layout) = { this with Layout = layout }
 
         member this.GetScissorRange(pos: Vector2) =
-            let borderOffsetXY, borderOffsetWH =
+            let borderOffsetXY =
                 if this.BorderWidth > 1f then
-                    this.BorderWidth / 2f, this.BorderWidth
+                    this.BorderWidth / 2f
                 else
-                    this.BorderWidth, this.BorderWidth
+                    this.BorderWidth
 
             Rectangle(
                 pos.X + borderOffsetXY,
                 pos.Y + borderOffsetXY,
-                this.Layout.Width - borderOffsetWH,
-                this.Layout.Height - borderOffsetWH
+                this.Layout.Width,
+                this.Layout.Height
             )
 
         static member private DefaultLazy =

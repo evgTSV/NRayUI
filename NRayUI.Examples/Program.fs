@@ -147,8 +147,8 @@ let updatePlayer (ctx: UpdateContext) =
     let absSize = getIconAbsoluteSizes playerSize
     let newPos = playerPos + velocity
     playerPos <- Vector2(
-            Math.Clamp(newPos.X, 0f, levelSize.X - absSize.X),
-            Math.Clamp(newPos.Y, 0f, levelSize.Y - absSize.Y))
+            Math.Clamp(newPos.X, 0f, levelSize.X - absSize.X - 1f),
+            Math.Clamp(newPos.Y, 0f, levelSize.Y - absSize.Y - 1f))
     
     if newPos <> playerPos then
         velocity <- Vector2.Zero
@@ -167,7 +167,7 @@ let gameField (ctx: UpdateContext) =
     let player = updatePlayer ctx
     Canvas.create [
         LayoutSet.modifiers [
-            height levelSize.Y >> width levelSize.X
+            size levelSize
             marginScan "50"
         ]
         BoxSet.backgroundColor Color.DarkGreen

@@ -62,6 +62,12 @@ module Modifier =
 
     let height (v: float32) (layout: Layout) : Layout = { layout with Height = v }
 
+    let size (v: Vector2) (layout: Layout) : Layout = {
+        layout with
+            Width = v.X
+            Height = v.Y
+    }
+
     let align (alignment: Alignment) (layout: Layout) : Layout = {
         layout with
             Alignment = Some alignment
