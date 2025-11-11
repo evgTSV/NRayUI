@@ -15,13 +15,6 @@ type Label = {
         member this.Render(ctx) =
             let pos = ctx.CurrentPosition
             let layout = (this :> ILayoutProvider).GetLayout
-            let borderOffset = this.Box.BorderWidth / 2f
-
-            let layout = {
-                layout with
-                    Width = Math.Max(layout.Width, this.Text.Width - borderOffset)
-                    Height = Math.Max(layout.Height, this.Text.Height - borderOffset)
-            }
 
             let box = { this.Box with Layout = layout }
 
@@ -42,7 +35,11 @@ type Label = {
         member this.Update _ = this
 
     interface ILayoutProvider with
-        member this.GetLayout = this.Box.Layout
+        member this.GetLayout = {
+            this.Box.Layout with
+                Width = this.Width
+                Height = this.Height
+        }
 
     interface IWithLayout<Label> with
         member this.SetLayout(layout) = { this with Label.Box.Layout = layout }
@@ -58,6 +55,14 @@ type Label = {
 
     interface IWithText<Label> with
         member this.SetText(text) = { this with Text = text }
+
+    member this.Width =
+        let layout = this.Box.Layout
+        Math.Max(layout.Padding.Left + layout.Width + layout.Padding.Right, this.Text.Width)
+
+    member this.Height =
+        let layout = this.Box.Layout
+        Math.Max(layout.Padding.Top + layout.Height + layout.Padding.Bottom, this.Text.Height)
 
     static member private DefaultLazy =
         lazy

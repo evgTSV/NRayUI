@@ -45,6 +45,9 @@ and UpdateContext = {
         member this.GetService(serviceType) =
             this.ServiceProvider.GetService serviceType
 
+    member this.GetRequiredViewModel<'T>() =
+        (this :> IServiceProvider).GetRequiredService<'T>()
+
 type RenderAction = RenderingContext -> unit
 type RenderHandler = RenderAction -> RenderingContext -> unit
 

@@ -6,6 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="SimpleGame.fs" />
+        <Compile Include="InputViewer.fs" />
+        <Compile Include="StackPanelExample.fs" />
         <Compile Include="Program.fs"/>
     </ItemGroup>
 

@@ -1,5 +1,6 @@
 namespace NRayUI.Elements
 
+open System
 open System.Numerics
 open NRayUI.Elements.Elem
 open NRayUI.Modifier
@@ -14,12 +15,85 @@ module Panel =
     type IPanel<'a> =
         inherit ILayoutProvider
         inherit IWithBox<'a>
+
         abstract member GetChildren: IElem list
         abstract member SetChildren: IElem list -> 'a
 
-        /// <remarks>Let inheritor change base pos thought ref</remarks>
+        abstract member IsFixedSize: bool
+        abstract member SetFixedSize: bool -> 'a
+
         abstract member CalculateChildPos:
-            prev: Layout * curr: Layout * i: int * basePos: byref<Vector2> -> Vector2
+            prevPos: Vector2 *
+            prev: ILayoutProvider *
+            curr: ILayoutProvider *
+            i: int *
+            basePos: Vector2 ->
+                Vector2
+
+    let calculateChildrenPositions (panel: IPanel<'a>) (ctx: RenderingContext) =
+        let layout = (panel :> ILayoutProvider).GetLayout
+
+        let panelBox = (panel :> IBoxProvider).GetBox
+        let mutable scissor = panelBox.GetScissorRange ctx.CurrentPosition
+
+        let basePos =
+            Vector2(layout.Padding.Left + scissor.X, scissor.Y + layout.Padding.Top)
+
+        let childrenWithLayout, childrenWithoutLayout =
+            panel.GetChildren
+            |> List.partition (function
+                | :? ILayoutProvider -> true
+                | _ -> false)
+
+        let childrenWithLayout =
+            childrenWithLayout |> List.map (fun c -> c :?> ILayoutProvider)
+
+        let initState = {|
+            PrevPos = basePos
+            Width = 0f
+            Height = 0f
+            Ptr = 0
+        |}
+
+        // Adaptive-sized panel
+        // panelPos -(padding)-> p1 <-(margin)-> p2 <-(padding)- panelPosEnd
+        // size = panelPosEnd - panelPos
+        let positionedChildren, state =
+            (initState, childrenWithLayout)
+            ||> List.mapFold (fun state child ->
+                let prev =
+                    if state.Ptr > 0 then
+                        childrenWithLayout[state.Ptr - 1]
+                    else
+                        { new ILayoutProvider with
+                            member this.GetLayout = Layout.Zero
+                        }
+
+                let childPos =
+                    panel.CalculateChildPos(state.PrevPos, prev, child, state.Ptr, basePos)
+
+                let newWidth =
+                    Math.Max(childPos.X - basePos.X + child.GetLayout.Width, state.Width)
+
+                let newHeight =
+                    Math.Max(childPos.Y - basePos.Y + child.GetLayout.Height, state.Height)
+
+                let state = {|
+                    state with
+                        PrevPos = childPos
+                        Width = newWidth
+                        Height = newHeight
+                        Ptr = state.Ptr + 1
+                |}
+
+                childPos, state)
+
+        positionedChildren
+        @ (List.replicate childrenWithoutLayout.Length ctx.CurrentPosition),
+        Vector2(
+            Math.Max(layout.Padding.Left + state.Width + layout.Padding.Right, layout.Width),
+            Math.Max(layout.Padding.Top + state.Height + layout.Padding.Bottom, layout.Height)
+        )
 
     let renderPanelBase (panel: IPanel<'a>) : RenderAction =
         fun ctx ->
@@ -32,12 +106,21 @@ module Panel =
                         ctx.CurrentPosition + Vector2(layout.Margin.Left, layout.Margin.Top)
             }
 
-            let panelBox = (panel :> IBoxProvider).GetBox
+            let positions, limitSize = calculateChildrenPositions panel ctx
+
+            let panelBox =
+                if panel.IsFixedSize then
+                    (panel :> IBoxProvider).GetBox
+                else
+                    {
+                        (panel :> IBoxProvider).GetBox with
+                            Box.Layout.Width = limitSize.X
+                            Box.Layout.Height = limitSize.Y
+                    }
 
             (panelBox :> IElem).Render(ctx)
 
-            let mutable scissor = panelBox.GetScissorRange ctx.CurrentPosition
-            let mutable basePos = Vector2(scissor.X, scissor.Y)
+            let scissor = panelBox.GetScissorRange ctx.CurrentPosition
 
             let ctx = {
                 ctx with
@@ -46,30 +129,8 @@ module Panel =
 
             let children = panel.GetChildren
 
-            for i in 0 .. children.Length - 1 do
+            positions
+            |> List.iteri (fun i childPos ->
                 let child = children[i]
-
-                match child with
-                | :? ILayoutProvider as withLayout ->
-                    let prevLayout =
-                        if i > 0 then
-                            let prevChild = children[i - 1]
-
-                            match prevChild with
-                            | :? ILayoutProvider as prevWithLayout -> prevWithLayout.GetLayout
-                            | _ -> layout
-                        else
-                            layout
-
-                    let childLayout = withLayout.GetLayout
-
-                    let childContext = {
-                        ctx with
-                            CurrentPosition =
-                                basePos
-                                + Vector2(layout.Padding.Left, layout.Padding.Top)
-                                + panel.CalculateChildPos(prevLayout, childLayout, i, &basePos)
-                    }
-
-                    child.Render(childContext)
-                | _ -> child.Render(ctx)
+                let childContext = { ctx with CurrentPosition = childPos }
+                child.Render(childContext))

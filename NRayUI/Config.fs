@@ -11,8 +11,6 @@ open Raylib_CSharp.Colors
 open Raylib_CSharp.Rendering
 open Raylib_CSharp.Windowing
 
-type View<'a when 'a :> IElem and IWithLayout<'a>> = UpdateContext -> 'a
-
 type DebugOptions = {
     RecordRenders: bool
     TrackStates: bool

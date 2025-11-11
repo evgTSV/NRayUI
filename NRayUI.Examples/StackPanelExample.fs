@@ -1,0 +1,68 @@
+module NRayUI.Examples.StackPanelExample
+
+open System
+open NRayUI.Components.UIConfigurator
+open NRayUI.Elements
+open NRayUI.Elements.Panels
+open NRayUI.Field
+open NRayUI.Icons
+open NRayUI.Modifier
+open NRayUI.Positioning
+open NRayUI.RenderBase
+open Raylib_CSharp.Colors
+
+let myStackPanel (ctx: UpdateContext) =
+    StackPanel.create [
+        LayoutSet.modifiers [
+            top 100f >> left 200f
+            margin { Top = 100f; Right = 20f; Bottom = 10f; Left = 50f }
+            padding { Top = 25f; Right = 0f; Bottom = 25f; Left = 25f }
+        ]
+        BoxSet.backgroundColor Color.Blue
+        BoxSet.borderColor Color.DarkBlue
+        BoxSet.borderWidth 10f
+        BoxSet.cornerRadius { TopLeft = 0f; TopRight = 1f; BottomLeft = 0.5f; BottomRight = 0.1f }
+        StackPanelSet.orientation Orientation.Vertical
+        PanelSet.children [
+            Label.create [
+                TextSet.content "Hello!"
+                TextSet.color Color.Red
+                TextSet.fontSize 60f
+                LayoutSet.modifiers [
+                    paddingScan "0 0 0 20"
+                    width 200f >> height 120f
+                ]
+                BoxSet.cornerRadius { Corners.zero with TopRight = 1f }
+            ]
+            ImageBox.create [
+                BoxSet.backgroundColor Color.Blank
+                BoxSet.borderWidth 5f
+                ImageBoxSet.source (IconSource(Icon.CPU, 5))
+                ImageBoxSet.tint Color.RayWhite
+                LayoutSet.modifiers [
+                    padding { Padding.zero with Top = 8f; Left = 8f }
+                    width 100f >> height 100f
+                ]
+            ]
+            Label.create [
+                TextSet.content $"L{String('o', 50)}ng"
+                TextSet.color Color.Black
+                LayoutSet.modifiers [
+                    paddingScan "0 0 0 30"
+                    width 800f >> height 70f
+                ]
+                BoxSet.backgroundColor Color.White
+                BoxSet.crScan "1"
+            ]
+            ImageBox.create [
+                BoxSet.backgroundColor Color.Blank
+                BoxSet.borderColor Color.Red
+                ImageBoxSet.texture (ctx.Resources.LoadTexture @"./Assets/nrayui_logo_100x100.png")
+                ImageBoxSet.tint Color.RayWhite
+                LayoutSet.modifiers [
+                    paddingScan "10"
+                    width 120f >> height 120f
+                ]
+            ]
+        ]
+    ]

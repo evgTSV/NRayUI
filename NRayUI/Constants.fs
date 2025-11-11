@@ -7,7 +7,7 @@ let SmoothCircleErrorRate = 0.5f
 let DefaultSmoothCircleSegments = 3
 
 [<Literal>]
-let DefaultLayoutSize = 100f
+let DefaultLayoutSize = 10f
 
 [<Literal>]
 let DefaultStackPanelSpacing = 10f

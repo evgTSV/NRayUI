@@ -3,6 +3,7 @@ module NRayUI.UIRendering
 open System.Numerics
 open JetBrains.Lifetimes
 open NRayUI.Camera
+open NRayUI.Control
 open NRayUI.Input
 open NRayUI.Input.UserInput
 open NRayUI.Loader
@@ -29,7 +30,7 @@ let inline renderEpilogue () =
 let inline update (uCtx: UpdateContext) (view: View<'a>) =
 
     let upd (ctx: UpdateContext) =
-        let input = handleInput (ctx.TickEngine.LastProcessedTickTime)
+        let input = handleInput ctx.TickEngine.LastProcessedTickTime
 
         {
             ctx with

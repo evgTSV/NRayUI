@@ -26,7 +26,7 @@ type ImageBox = {
                     Height = Math.Max(layout.Height, this.Image.Height - borderOffset)
             }
 
-            let box = { this.Box with Layout = layout }
+            let box = (this.Box :> IWithLayout<Box>).SetLayout(layout)
 
             (box :> IElem).Render(ctx)
 

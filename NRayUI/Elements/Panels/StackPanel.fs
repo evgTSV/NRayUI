@@ -11,35 +11,33 @@ type StackPanel = {
     Children: IElem list
     Spacing: float32
     Box: Box
+    IsFixedSize: bool
 } with
 
     interface IPanel<StackPanel> with
         member this.GetChildren = this.Children
-        member this.SetChildren(children) = { this with Children = children }
+        member this.SetChildren children = { this with Children = children }
 
-        member this.CalculateChildPos(prev, curr, i, basePos) =
-            if i > 0 then
-                match this.Orientation with
-                | Orientation.Vertical ->
-                    let offset =
-                        Vector2(
-                            0f,
-                            prev.Height + prev.Margin.Bottom + curr.Margin.Top + this.Spacing
-                        )
+        member this.IsFixedSize = this.IsFixedSize
+        member this.SetFixedSize v = { this with IsFixedSize = v }
 
-                    basePos <- basePos + offset
-                    offset
-                | Orientation.Horizontal ->
-                    let offset =
-                        Vector2(
-                            prev.Width + prev.Margin.Right + curr.Margin.Left + this.Spacing,
-                            0f
-                        )
+        member this.CalculateChildPos(prevPos, prev, curr, i, _) =
+            let prev = prev.GetLayout
+            let curr = curr.GetLayout
 
-                    basePos <- basePos + offset
-                    offset
-            else
-                Vector2.Zero
+            let spacing = if i = 0 then 0f else this.Spacing
+
+            match this.Orientation with
+            | Orientation.Vertical ->
+                Vector2(
+                    prevPos.X,
+                    prevPos.Y + prev.Height + prev.Margin.Bottom + curr.Margin.Top + spacing
+                )
+            | Orientation.Horizontal ->
+                Vector2(
+                    prevPos.X + prev.Width + prev.Margin.Right + curr.Margin.Left + spacing,
+                    prevPos.Y
+                )
 
     interface IElem with
         member this.Render(ctx) = ctx |> renderPanelBase this
@@ -73,6 +71,7 @@ type StackPanel = {
                  Children = []
                  Spacing = DefaultStackPanelSpacing
                  Box = box
+                 IsFixedSize = false
              })
 
     static member Default = StackPanel.DefaultLazy.Force()

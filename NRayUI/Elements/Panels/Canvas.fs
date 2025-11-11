@@ -8,18 +8,27 @@ open type Raylib_CSharp.Rendering.Graphics
 type Canvas = {
     Children: IElem list
     Box: Box
+    IsFixedSize: bool
 } with
 
     interface IPanel<Canvas> with
         member this.GetChildren = this.Children
-        member this.SetChildren(children) = { this with Children = children }
+        member this.SetChildren children = { this with Children = children }
 
-        member this.CalculateChildPos(prev, curr, i, basePos) =
-            let prev = if i > 0 then prev else Layout.Zero
+        member this.IsFixedSize = this.IsFixedSize
+
+        member this.SetFixedSize v = {
+            this with
+                IsFixedSize = this.IsFixedSize
+        }
+
+        member this.CalculateChildPos(_, prev, curr, i, basePoint) =
+            let prev = prev.GetLayout
+            let curr = curr.GetLayout
 
             Vector2(
-                curr.Position.X + prev.Margin.Right + curr.Margin.Left,
-                curr.Position.Y + prev.Margin.Bottom + curr.Margin.Top
+                basePoint.X + curr.Position.X + prev.Margin.Right + curr.Margin.Left,
+                basePoint.Y + curr.Position.Y + prev.Margin.Bottom + curr.Margin.Top
             )
 
     interface IElem with
@@ -45,7 +54,12 @@ type Canvas = {
     static member private DefaultLazy =
         lazy
             (let box = Box.Default
-             { Children = []; Box = box })
+
+             {
+                 Children = []
+                 Box = box
+                 IsFixedSize = true
+             })
 
     static member Default = Canvas.DefaultLazy.Force()
 

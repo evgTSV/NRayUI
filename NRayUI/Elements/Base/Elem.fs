@@ -34,13 +34,7 @@ module Elem =
             member this.Render(ctx) =
                 let pos = ctx.CurrentPosition
 
-                let rec_ =
-                    Rectangle(
-                        pos.X,
-                        pos.Y,
-                        this.Layout.Width + this.BorderWidth,
-                        this.Layout.Height + this.BorderWidth
-                    )
+                let rec_ = Rectangle(pos.X, pos.Y, this.Width, this.Height)
 
                 let render = [
                     drawRectangleCustomRounded
@@ -63,10 +57,18 @@ module Elem =
             member this.Update _ = this
 
         interface ILayoutProvider with
-            member this.GetLayout = this.Layout
+            member this.GetLayout = {
+                this.Layout with
+                    Width = this.Width
+                    Height = this.Height
+            }
 
         interface IWithLayout<Box> with
             member this.SetLayout(layout) = { this with Layout = layout }
+
+        member this.Width = this.Layout.Width + this.BorderWidth
+
+        member this.Height = this.Layout.Height + this.BorderWidth
 
         member this.GetScissorRange(pos: Vector2) =
             let borderOffsetXY =
@@ -96,10 +98,12 @@ module Elem =
         static member Default = Box.DefaultLazy.Force()
 
     and [<Interface>] IBoxProvider =
+        inherit ILayoutProvider
         abstract member GetBox: Box
 
     and [<Interface>] IWithBox<'a> =
         inherit IBoxProvider
+        inherit IWithLayout<'a>
         abstract member SetBox: Box -> 'a
 
     [<RequireQualifiedAccess>]
@@ -190,8 +194,7 @@ module Elem =
 
         member private this.CreateBoxMem =
             lazyMemoize (Vector2Comparer()) (fun (pos: Vector2) ->
-                let textMeasure =
-                    measureText (this.GetFont()) this.Content this.FontSize this.Spacing
+                let textMeasure = this.Measure
 
                 let layout = createLayout pos textMeasure.X textMeasure.Y
 
@@ -202,9 +205,12 @@ module Elem =
                         BorderWidth = 0f
                 })
 
-        member this.Width = (this.CreateBoxMem(Vector2(0f))).Layout.Width
+        member this.Measure: Vector2 =
+            measureText (this.GetFont()) this.Content this.FontSize this.Spacing
 
-        member this.Height = (this.CreateBoxMem(Vector2(0f))).Layout.Height
+        member this.Width = this.Measure.X
+
+        member this.Height = this.Measure.Y
 
         interface IElem with
             member this.Render(ctx) =
