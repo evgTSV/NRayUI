@@ -60,7 +60,7 @@ type ImageSource(image: Image) =
                 if cachedTex.IsValueCreated then
                     cachedTex.Value.Unload()
 
-                GC.SuppressFinalize()
+                GC.SuppressFinalize(this)
 
     override this.Finalize() =
         try

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
         <Tailcalls>true</Tailcalls> <!-- .tail annotations always emitted for this binary, even in debug mode -->
@@ -29,6 +29,7 @@
         <Compile Include="Elements\Panels\Canvas.fs" />
         <Compile Include="Elements\Panels\StackPanel.fs" />
         <Compile Include="Elements\ImageBox.fs" />
+        <Compile Include="Control.fs" />
         <Compile Include="Config.fs" />
         <Compile Include="UIConfigurator.fs" />
         <Compile Include="UIRendering.fs" />

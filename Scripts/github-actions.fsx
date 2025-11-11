@@ -79,7 +79,7 @@ let workflows = [
                 name = "Set up .NET SDK",
                 usesSpec = dotnetSetupAction,
                 options = Map.ofList [
-                    "dotnet-version", "9.0.x"
+                    "dotnet-version", "10.0.x"
                 ]
             )
             step(
