@@ -124,17 +124,18 @@ let hud() =
         ]
         LayoutSet.zIndex 2
         BoxSet.crScan "0.5"
+        BoxSet.backgroundColor (Color.FromHex(0x07FFFF1Fu))
         StackPanelSet.spacing 100f
         StackPanelSet.orientation Orientation.Horizontal
         PanelSet.children [
             Label.create [
-                LayoutSet.height 0f
-                BoxSet.borderWidth 1f
+                BoxSet.backgroundColor Color.Blank
+                BoxSet.borderWidth 0f
                 TextSet.content $"Score: {score}"
             ]
             Label.create [
-                LayoutSet.height 0f
-                BoxSet.borderWidth 1f
+                BoxSet.backgroundColor Color.Blank
+                BoxSet.borderWidth 0f
                 TextSet.content $"Coins: {collected}"
             ]
         ]

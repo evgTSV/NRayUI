@@ -1,5 +1,6 @@
 open NRayUI
 open NRayUI.Examples.SimpleGame
+open NRayUI.Examples.StackPanelExample
 open NRayUI.Window
 open NRayUI.UIRendering
 open type Raylib_CSharp.Rendering.Graphics

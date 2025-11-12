@@ -26,8 +26,7 @@ type Label = {
                         ctx with
                             CurrentPosition =
                                 pos
-                                + Vector2(layout.Padding.Left, layout.Padding.Top)
-                                + Vector2(0f, (layout.Height - this.Text.FontSize) / 2f)
+                                + Vector2(layout.Padding.Left, (layout.Height - this.Text.FontSize) / 2f)
                             ScissorRegion = box.GetScissorRange pos <&&?> ctx.ScissorRegion
                     }
                 )

@@ -16,7 +16,7 @@ let myStackPanel (ctx: UpdateContext) =
         LayoutSet.modifiers [
             top 100f >> left 200f
             margin { Top = 100f; Right = 20f; Bottom = 10f; Left = 50f }
-            padding { Top = 25f; Right = 0f; Bottom = 25f; Left = 25f }
+            padding { Top = 25f; Right = 25f; Bottom = 25f; Left = 25f }
         ]
         BoxSet.backgroundColor Color.Blue
         BoxSet.borderColor Color.DarkBlue
@@ -45,11 +45,10 @@ let myStackPanel (ctx: UpdateContext) =
                 ]
             ]
             Label.create [
-                TextSet.content $"L{String('o', 50)}ng"
+                TextSet.content $"L{String('o', 10)}ng"
                 TextSet.color Color.Black
                 LayoutSet.modifiers [
-                    paddingScan "0 0 0 30"
-                    width 800f >> height 70f
+                    paddingScan "5 20 5 20"
                 ]
                 BoxSet.backgroundColor Color.White
                 BoxSet.crScan "1"
