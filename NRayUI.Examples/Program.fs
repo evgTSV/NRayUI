@@ -15,4 +15,4 @@ let builder = UIBuilder()
     
 let app = builder.Build()
 
-gameField |> startRendering app
+myStackPanel |> startRendering app

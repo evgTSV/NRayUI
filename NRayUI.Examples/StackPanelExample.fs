@@ -17,12 +17,14 @@ let myStackPanel (ctx: UpdateContext) =
             top 100f >> left 200f
             margin { Top = 100f; Right = 20f; Bottom = 10f; Left = 50f }
             padding { Top = 25f; Right = 25f; Bottom = 25f; Left = 25f }
+            width 300f >> height 500f
         ]
         BoxSet.backgroundColor Color.Blue
         BoxSet.borderColor Color.DarkBlue
         BoxSet.borderWidth 10f
         BoxSet.cornerRadius { TopLeft = 0f; TopRight = 1f; BottomLeft = 0.5f; BottomRight = 0.1f }
         StackPanelSet.orientation Orientation.Vertical
+        PanelSet.fixedSize true
         PanelSet.children [
             Label.create [
                 TextSet.content "Hello!"
@@ -45,10 +47,10 @@ let myStackPanel (ctx: UpdateContext) =
                 ]
             ]
             Label.create [
-                TextSet.content $"L{String('o', 10)}ng"
+                TextSet.content $"L{String('o', 100)}ng"
                 TextSet.color Color.Black
                 LayoutSet.modifiers [
-                    paddingScan "5 20 5 20"
+                    paddingScan "20"
                 ]
                 BoxSet.backgroundColor Color.White
                 BoxSet.crScan "1"

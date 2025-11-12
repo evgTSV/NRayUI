@@ -10,7 +10,6 @@ open NRayUI.Input
 open NRayUI.Field
 open NRayUI.Modifier
 open NRayUI.RenderBase
-open NRayUI.Scanner
 open Raylib_CSharp.Colors
 open Raylib_CSharp.Interact
 open Raylib_CSharp.Transformations

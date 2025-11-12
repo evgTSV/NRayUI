@@ -5,6 +5,8 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
         <Tailcalls>true</Tailcalls> <!-- .tail annotations always emitted for this binary, even in debug mode -->
+        <ParallelCompilation>true</ParallelCompilation>
+        <Deterministic>false</Deterministic>
     </PropertyGroup>
 
     <ItemGroup>
