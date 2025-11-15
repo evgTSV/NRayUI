@@ -28,7 +28,7 @@ Paste the following package reference to your fsproject file:
 ## Step 3: Add code to `Program.fs`
 
 ```fsharp
-namespace CounterApp
+module CounterApp
 
 open NRayUI
 open NRayUI.Elements

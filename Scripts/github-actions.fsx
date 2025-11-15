@@ -39,8 +39,29 @@ let workflows = [
         )
     ]
     
+    let dotnetVersion = "10.0.x"
+
     let checkoutAction = Auto "actions/checkout"
     let dotnetSetupAction = Auto "actions/setup-dotnet"
+    
+    let commonSteps() = [
+        step(
+            name = "Checkout",
+            usesSpec = checkoutAction
+        )
+        yield! nuGetCache()
+        step(
+            name = "Set up .NET SDK",
+            usesSpec = dotnetSetupAction,
+            options = Map.ofList [
+                "dotnet-version", dotnetVersion
+            ]
+        )
+        step(
+            name = "Build",
+            run = "dotnet build"
+        )
+    ]
 
     workflow "main" [
         name "Main"
@@ -70,22 +91,7 @@ let workflows = [
             setEnv "DOTNET_NOLOGO" "1"
             setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
 
-            step(
-                name = "Checkout",
-                usesSpec = checkoutAction
-            )
-            yield! nuGetCache()
-            step(
-                name = "Set up .NET SDK",
-                usesSpec = dotnetSetupAction,
-                options = Map.ofList [
-                    "dotnet-version", "10.0.x"
-                ]
-            )
-            step(
-                name = "Build",
-                run = "dotnet build"
-            )
+            yield! commonSteps()
             step(
                 name = "Test",
                 run = "dotnet test --filter Category!=ExcludeCI"
@@ -145,6 +151,65 @@ let workflows = [
             step(
                 name = "Verify generated CI definition",
                 run = "dotnet fsi ./Scripts/github-actions.fsx verify"
+            )
+        ]
+    ]
+    
+    workflow "release" [
+        name "Release"
+        onPushTo "main"
+        onPushTags "v*"
+        onPullRequestTo "main"
+        onSchedule "0 0 * * 6"
+        job "release" [
+            writeContentPermissions
+            runsOn "ubuntu-24.04"
+            setEnv "DOTNET_NOLOGO" "1"
+            setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
+            
+            step(
+                name = "Checkout",
+                usesSpec = checkoutAction
+            )
+            step(
+                name = "Read version from ref",
+                id = "version",
+                shell = "pwsh",
+                run = "echo \"version=$(./Scripts/Get-Version.ps1 -RefName $env:GITHUB_REF)\" >> $env:GITHUB_OUTPUT"
+            )
+            step(
+                name = "Set up .NET SDK",
+                usesSpec = dotnetSetupAction,
+                options = Map.ofList [
+                    "dotnet-version", dotnetVersion
+                ]
+            )
+            yield! nuGetCache()
+
+            step(
+                name = "Build Release",
+                run = "dotnet build -c Release"
+            )
+
+            step(
+                name = "Pack NuGet package",
+                run = "dotnet pack NRayUI -c Release -p:Version=${{ steps.version.outputs.version }} --output nupkg"
+            )
+
+            step(
+                name = "Publish to NuGet",
+                run = "dotnet nuget push nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json"
+            )
+
+            step(
+                name = "Create GitHub Release",
+                usesSpec = Auto "softprops/action-gh-release",
+                options = Map.ofList [
+                    "tag_name", "${{ github.ref_name }}"
+                    "name", "NRayUI v${{ steps.version.outputs.version }}"
+                    "body", "Automatic release for NRayUI v${{ steps.version.outputs.version }}"
+                    "files", "nupkg/*.nupkg"
+                ]
             )
         ]
     ]
