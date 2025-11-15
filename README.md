@@ -12,7 +12,7 @@ Some of the UI features have been implemented
 
 Installation
 ------------
-Download the latest distribution for your platform from **Nuget**.
+Download the latest distribution for your platform from [**Nuget**][nuget-url].
 
 For a development build, browse from sources.
 
@@ -41,3 +41,4 @@ Thanks to [Hack Club][hackclub-url] for support
 [andivionian-status-classifier]: https://andivionian.fornever.me/v1/#status-enfer-
 [status-enfer]: https://img.shields.io/badge/status-enfer-orange.svg
 [hackclub-url]: https://hackclub.com
+[nuget-url]: https://www.nuget.org/packages/NRayUI
