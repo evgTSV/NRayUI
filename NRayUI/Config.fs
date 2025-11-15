@@ -6,6 +6,8 @@ open Microsoft.Extensions.Logging
 open NRayUI.Elements
 open NRayUI.Modifier
 open NRayUI.RenderBase
+open NRayUI.Services
+open NRayUI.StateService
 open NRayUI.Window
 open Raylib_CSharp.Colors
 open Raylib_CSharp.Rendering
@@ -47,7 +49,10 @@ type UIBuilder() =
         DebugOptions = None
     }
 
-    let services = ServiceCollection()
+    let services =
+        ServiceCollection()
+            .AddScoped<UIStateService>()
+            .AddScoped<IStateManager, StateManager>()
 
     member _.Services = services
 

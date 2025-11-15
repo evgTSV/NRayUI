@@ -21,5 +21,8 @@ let parseFloat32 (s: string) =
     Single.Parse(s, System.Globalization.CultureInfo.InvariantCulture)
 
 type Rectangle with
+    member this.Contains(point: Vector2) =
+        point.X >= this.X && point.X <= this.X + this.Width &&
+        point.Y >= this.Y && point.Y <= this.Y + this.Height
     member this.AsScissor = (int this.X, int this.Y, int this.Width, int this.Height)
     static member zero = Rectangle(0f, 0f, 0f, 0f)

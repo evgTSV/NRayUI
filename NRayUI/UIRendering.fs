@@ -2,6 +2,7 @@ module NRayUI.UIRendering
 
 open System.Numerics
 open JetBrains.Lifetimes
+open Microsoft.Extensions.DependencyInjection
 open NRayUI.Camera
 open NRayUI.Control
 open NRayUI.Input
@@ -23,6 +24,7 @@ let inline renderPrologue (ctx: RenderingContext) =
     ClearBackground Color.RayWhite
 
 let inline renderEpilogue () =
+    SequentialIdGenerator.reset()
     EndBlendMode()
     EndMode2D()
     EndDrawing()
@@ -41,10 +43,11 @@ let inline update (uCtx: UpdateContext) (view: View<'a>) =
 
     let uCtx = { uCtx with TickEngine = tickEngine }
 
-    view uCtx
+    (view uCtx).Update(uCtx)
 
 let inline renderView (rCtx: RenderingContext) (uCtx: UpdateContext) (view: View<'a>) =
 
+    use frameScope = uCtx.ServiceProvider.CreateScope()
     let updated = view |> update uCtx
     updated.Render rCtx
 

@@ -62,19 +62,16 @@ type StackPanel = {
     interface IWithBox<StackPanel> with
         member this.SetBox(box) = { this with Box = box }
 
-    static member private DefaultLazy =
-        lazy
-            (let box = Box.Default
+    static member Default =
+        let box = Box.Default
 
-             {
-                 Orientation = Orientation.Vertical
-                 Children = []
-                 Spacing = DefaultStackPanelSpacing
-                 Box = box
-                 IsFixedSize = false
-             })
-
-    static member Default = StackPanel.DefaultLazy.Force()
+        {
+            Orientation = Orientation.Vertical
+            Children = []
+            Spacing = DefaultStackPanelSpacing
+            Box = box
+            IsFixedSize = false
+        }
 
 /// StackPanel - panel, where children layout by the stack order with orientation
 [<RequireQualifiedAccess>]

@@ -15,10 +15,12 @@ Element properties are configured through modifier chains, ensuring flexibility 
 ### 3. Typed Modifier Sets
 Different element types have their own specific modifier sets (Layout, Box, StackPanel, etc.)
 
+To change properties of control use this tip: `Control's name`+`Set` (e.g `StackPanel.orientation`)
+
 ## Code Example
 
 ```fsharp
-let test =
+let test ctx =
     StackPanel.create [
         LayoutSet.modifiers [
             top 100f
@@ -72,3 +74,11 @@ A simple rectangular element for rendering.
 - `borderColor` - border color
 - `borderWidth` - border thickness
 - `cornerRadius` - corner rounding radius (can be set individually per corner)
+
+#### TextSet (Elements with text)
+- `content` - visible text content
+- `fontSize` - font size used to measure and draw the text
+- `color` - text color
+- `font` - font resource used for rendering text
+- `backgroundColor` - background color behind the text glyphs
+- `spacing` - pacing between characters or glyphs

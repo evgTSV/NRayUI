@@ -10,50 +10,67 @@ open NRayUI.Input
 open NRayUI.Field
 open NRayUI.Modifier
 open NRayUI.RenderBase
+open NRayUI.StateService
 open Raylib_CSharp.Colors
 open Raylib_CSharp.Interact
 open Raylib_CSharp.Transformations
 
+// Constants
+
 let private levelSize = Vector2(500f)
 let private playerSize = 5
 let private coinSize = 2
-
 let private maxVelocity = 2f
+let private pointsForCoin = 10
 
-let mutable private playerPos = Vector2(200f, 200f)
 
 let private getCoinPos() = Vector2 (
     Random.Shared.Next(0, levelSize.X - (getIconAbsoluteSizes coinSize).X - 1f |> int) |> float32,
     Random.Shared.Next(0, levelSize.Y - (getIconAbsoluteSizes coinSize).Y - 1f |> int) |> float32
 )
 
-let mutable private coinPos = getCoinPos()
-    
-let mutable private velocity = Vector2(0f, 0f)
-let mutable private score = 0
-let mutable private collected = 0
+type Player = {
+    TopLeft: Vector2
+    Velocity: Vector2
+    Score: int
+    Collected: int
+} with
+    static member Init() = {
+        TopLeft = Vector2(250f)
+        Velocity = Vector2.Zero
+        Score = 0
+        Collected = 0
+    }
 
+type GameState = {
+    Player: Player
+    CoinPos: Vector2
+} with
+    static member Init() = {
+        Player = Player.Init()
+        CoinPos = getCoinPos()
+    }
 
 let private handlePlayerInput (input: InputEvent) =
     match input with
     | KeyPressed k ->
         match k with
         | KeyboardKey.Up ->
-            velocity <- velocity - Vector2(0f, 1f)
+            Vector2(0f, -1f)
         | KeyboardKey.Down ->
-            velocity <- velocity + Vector2(0f, 1f)
+            Vector2(0f, 1f)
         | KeyboardKey.Left ->
-            velocity <- velocity - Vector2(1f, 0f)
+            Vector2(-1f, 0f)
         | KeyboardKey.Right ->
-            velocity <- velocity + Vector2(1f, 0f)
-        | _ -> ()
-    | _ -> ()
+            Vector2(1f, 0f)
+        | _ -> Vector2.Zero
+    | _ -> Vector2.Zero
     
-let private checkCollision (newPos: Vector2) =
+let private checkCollision (game: GameState) (newPos: Vector2) =
     let playerSizeAbs = getIconAbsoluteSizes playerSize
     let coinSizeAbs = getIconAbsoluteSizes coinSize
     
-    playerPos <- Vector2(
+    let playerPos = Vector2(
             Math.Clamp(newPos.X, 0f, levelSize.X - playerSizeAbs.X - 1f),
             Math.Clamp(newPos.Y, 0f, levelSize.Y - playerSizeAbs.Y - 1f))
     
@@ -65,34 +82,55 @@ let private checkCollision (newPos: Vector2) =
         )
     
     let coinRect = Rectangle(
-            coinPos.X,
-            coinPos.Y,
+            game.CoinPos.X,
+            game.CoinPos.Y,
             coinSizeAbs.X,
             coinSizeAbs.Y
         )
     
-    match playerRect <&&> coinRect with
-    | Some _ ->
-        score <- score + 10
-        collected <- collected + 1
-        coinPos <- getCoinPos()
-    | None -> ()
+    let game =
+        match playerRect <&&> coinRect with
+        | Some _ ->
+            let player = 
+                { game.Player with
+                    Score = game.Player.Score + pointsForCoin
+                    Collected = game.Player.Collected + 1 }
+            { game with
+                Player = player
+                CoinPos = getCoinPos() }
+        | None -> game
     
-    if newPos <> playerPos then
-        velocity <- Vector2.Zero
+    let velocity =
+        if newPos <> playerPos
+        then Vector2.Zero
+        else game.Player.Velocity
+        
+    { game with
+        GameState.Player.Velocity = velocity
+        GameState.Player.TopLeft = playerPos }
 
-let private updatePlayer (ctx: UpdateContext) =
-    ctx.Input
-    |> Array.iter handlePlayerInput
+let private updatePlayer (game: GameState) (ctx: UpdateContext) =
+    let player = game.Player
     
-    velocity <- Vector2 (
-        Math.Clamp(velocity.X,  -maxVelocity, maxVelocity),
-        Math.Clamp(velocity.Y,  -maxVelocity, maxVelocity)
+    let playerVelDelta =
+        ctx.Input
+        |> Array.map handlePlayerInput
+        |> Array.sum
+    
+    let velocity = Vector2 (
+        Math.Clamp(player.Velocity.X + playerVelDelta.X, -maxVelocity, maxVelocity),
+        Math.Clamp(player.Velocity.Y + playerVelDelta.Y, -maxVelocity, maxVelocity)
     )
     
-    let newPos = playerPos + velocity
-    checkCollision newPos
+    let game = {
+        game with
+            GameState.Player.Velocity = velocity
+    }
     
+    let newPos = player.TopLeft + velocity
+    checkCollision game newPos
+    
+let playerView (game: GameState) =
     ImageBox.create [
         ImageBoxSet.source (IconSource(Icon.Player, playerSize))
         ImageBoxSet.tint Color.Black
@@ -100,11 +138,11 @@ let private updatePlayer (ctx: UpdateContext) =
         BoxSet.borderColor Color.Red
         LayoutSet.width 10f
         LayoutSet.height 10f
-        LayoutSet.position playerPos
+        LayoutSet.position game.Player.TopLeft
         LayoutSet.zIndex 1
     ]
     
-let coin() =
+let coinView (game: GameState) =
     ImageBox.create [
         ImageBoxSet.source (IconSource(Icon.Coin, coinSize))
         ImageBoxSet.tint Color.Black
@@ -112,10 +150,10 @@ let coin() =
         BoxSet.borderColor Color.Red
         LayoutSet.width 10f
         LayoutSet.height 10f
-        LayoutSet.position coinPos
+        LayoutSet.position game.CoinPos
     ]
     
-let hud() =
+let hudView (game: GameState) =
     StackPanel.create [
         LayoutSet.modifiers [
             position (Vector2(10f))
@@ -130,18 +168,23 @@ let hud() =
             Label.create [
                 BoxSet.backgroundColor Color.Blank
                 BoxSet.borderWidth 0f
-                TextSet.content $"Score: {score}"
+                TextSet.content $"Score: {game.Player.Score}"
             ]
             Label.create [
                 BoxSet.backgroundColor Color.Blank
                 BoxSet.borderWidth 0f
-                TextSet.content $"Coins: {collected}"
+                TextSet.content $"Coins: {game.Player.Collected}"
             ]
         ]
     ]
 
 let gameField (ctx: UpdateContext) =
-    let player = updatePlayer ctx
+    let state = ctx.UseState(GameState.Init())
+    
+    let game = state.Current
+    state.Set(updatePlayer game ctx)
+    let game = state.Current
+    
     Canvas.create [
         LayoutSet.modifiers [
             size levelSize
@@ -151,8 +194,8 @@ let gameField (ctx: UpdateContext) =
         BoxSet.borderColor Color.Black
         BoxSet.borderWidth 10f
         PanelSet.children [
-            player
-            coin()
-            hud()
+            playerView game
+            coinView game
+            hudView game
         ]
     ]

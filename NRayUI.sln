@@ -6,6 +6,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "NRayUI.Tests", "NRayUI.Test
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "NRayUI.Examples", "NRayUI.Examples\NRayUI.Examples.fsproj", "{DB0D0138-7EAF-4F3C-A578-4A9F119932E3}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "NRayUI.Components", "NRayUI.Components\NRayUI.Components.fsproj", "{18AFD435-8AEC-4673-B5FD-C947E7D17959}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{DB0D0138-7EAF-4F3C-A578-4A9F119932E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB0D0138-7EAF-4F3C-A578-4A9F119932E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB0D0138-7EAF-4F3C-A578-4A9F119932E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18AFD435-8AEC-4673-B5FD-C947E7D17959}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18AFD435-8AEC-4673-B5FD-C947E7D17959}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18AFD435-8AEC-4673-B5FD-C947E7D17959}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18AFD435-8AEC-4673-B5FD-C947E7D17959}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -44,12 +44,12 @@ type ImageBox = {
         member this.Update _ = this
 
     interface ILayoutProvider with
-        member this.GetLayout = this.Box.Layout
+        member this.GetLayout = (this.Box :> ILayoutProvider).GetLayout
 
     interface IWithLayout<ImageBox> with
         member this.SetLayout(layout) = {
             this with
-                ImageBox.Box.Layout = layout
+                ImageBox.Box = (this.Box :> IWithLayout<Box>).SetLayout(layout)
         }
 
     interface IBoxProvider with
@@ -58,17 +58,14 @@ type ImageBox = {
     interface IWithBox<ImageBox> with
         member this.SetBox(box) = { this with Box = box }
 
-    static member private DefaultLazy =
-        lazy
-            (let box = Box.Default
+    static member Default =
+        let box = Box.Default
 
-             {
-                 Image = emptySource
-                 Tint = Color.RayWhite
-                 Box = box
-             })
-
-    static member Default = ImageBox.DefaultLazy.Force()
+        {
+            Image = emptySource
+            Tint = Color.RayWhite
+            Box = box
+        }
 
 /// Represents the simple image without difficult logic (editing, scaling, etc.)
 [<RequireQualifiedAccess>]

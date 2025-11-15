@@ -78,3 +78,6 @@ module UserInput =
             |> Array.choose id
         Time = time
     }
+
+    let getMousePosition() =
+        Input.GetMousePosition()

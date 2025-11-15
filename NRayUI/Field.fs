@@ -1,5 +1,7 @@
 module NRayUI.Field
 
+open System.Numerics
+open NRayUI.Utils
 open Raylib_CSharp.Transformations
 
 [<Struct; RequireQualifiedAccess>]

@@ -84,26 +84,21 @@ module Elem =
                 this.Layout.Height
             )
 
-        static member private DefaultLazy =
-            lazy
-                {
-                    Layout = createLayout (Vector2(0f, 0f)) DefaultLayoutSize DefaultLayoutSize
-                    BackgroundColor = Color.White
-                    BorderColor = Color.Black
-                    BorderWidth = 1.0f
-                    CornerRadius = createCorners 0f
-                    Smoothness = DefaultSmoothCircleSegments
-                }
-
-        static member Default = Box.DefaultLazy.Force()
+        static member Default =
+            {
+                Layout = createLayout (Vector2(0f, 0f)) DefaultLayoutSize DefaultLayoutSize
+                BackgroundColor = Color.White
+                BorderColor = Color.Black
+                BorderWidth = 1.0f
+                CornerRadius = createCorners 0f
+                Smoothness = DefaultSmoothCircleSegments
+            }
 
     and [<Interface>] IBoxProvider =
-        inherit ILayoutProvider
         abstract member GetBox: Box
 
     and [<Interface>] IWithBox<'a> =
         inherit IBoxProvider
-        inherit IWithLayout<'a>
         abstract member SetBox: Box -> 'a
 
     [<RequireQualifiedAccess>]
@@ -231,18 +226,15 @@ module Elem =
 
             member this.Update _ = this
 
-        static member private DefaultLazy =
-            lazy
-                {
-                    Content = "Some text"
-                    Font = None
-                    FontSize = 20.0f
-                    Color = Color.Black
-                    BackgroundColor = Color.Blank
-                    Spacing = 1.0f
-                }
-
-        static member Default = Text.DefaultLazy.Force()
+        static member Default =
+            {
+                Content = "Some text"
+                Font = None
+                FontSize = 20.0f
+                Color = Color.Black
+                BackgroundColor = Color.Blank
+                Spacing = 1.0f
+            }
 
     [<Interface>]
     type ITextProvider =

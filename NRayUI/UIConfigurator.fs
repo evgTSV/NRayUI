@@ -4,6 +4,7 @@ open System.Numerics
 open Aether
 open NRayUI
 open NRayUI.Elements
+open NRayUI.Elements.Buttons
 open NRayUI.Elements.Panels
 open NRayUI.Field
 open NRayUI.Modifier
@@ -351,4 +352,12 @@ module ImageBoxSet =
     let tint (value: Color) (imageBox: ImageBox) = {
         imageBox with
             Tint = value
+    }
+
+[<RequireQualifiedAccess>]
+module ButtonSet =
+    
+    let onClick (action: unit -> unit) (button: Button) = {
+        button with
+            OnClick = action
     }

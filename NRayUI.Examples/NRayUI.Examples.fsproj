@@ -9,6 +9,7 @@
         <Compile Include="SimpleGame.fs" />
         <Compile Include="InputViewer.fs" />
         <Compile Include="StackPanelExample.fs" />
+        <Compile Include="Counter.fs" />
         <Compile Include="Program.fs"/>
     </ItemGroup>
 

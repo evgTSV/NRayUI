@@ -1,9 +1,11 @@
 open NRayUI
+open NRayUI.Elements
+open NRayUI.Examples.Counter
+open NRayUI.Examples.InputViewer
 open NRayUI.Examples.SimpleGame
 open NRayUI.Examples.StackPanelExample
 open NRayUI.Window
 open NRayUI.UIRendering
-open type Raylib_CSharp.Rendering.Graphics
 
 let builder = UIBuilder()
 
@@ -15,4 +17,9 @@ let builder = UIBuilder()
     
 let app = builder.Build()
 
-myStackPanel |> startRendering app
+// Uncomment one view
+// gameField
+// inputViewer
+// myStackPanel
+counterView
+|> startRendering app

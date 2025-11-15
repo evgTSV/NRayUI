@@ -27,7 +27,7 @@ type Label = {
                             CurrentPosition =
                                 pos
                                 + Vector2(
-                                    layout.Padding.Left,
+                                    (layout.Width - this.Text.Width) / 2f,
                                     (layout.Height - this.Text.FontSize) / 2f
                                 )
                             ScissorRegion = box.GetScissorRange pos <&&?> ctx.ScissorRegion
@@ -66,14 +66,11 @@ type Label = {
         let layout = this.Box.Layout
         Math.Max(layout.Padding.Top + layout.Height + layout.Padding.Bottom, this.Text.Height)
 
-    static member private DefaultLazy =
-        lazy
-            {
-                Box = Box.Default
-                Text = Text.Default
-            }
-
-    static member Default = Label.DefaultLazy.Force()
+    static member Default =
+        {
+            Box = Box.Default
+            Text = Text.Default
+        }
 
 [<RequireQualifiedAccess>]
 module Label =

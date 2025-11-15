@@ -51,17 +51,14 @@ type Canvas = {
     interface IWithBox<Canvas> with
         member this.SetBox(box) = { this with Box = box }
 
-    static member private DefaultLazy =
-        lazy
-            (let box = Box.Default
+    static member Default =
+        let box = Box.Default
 
-             {
-                 Children = []
-                 Box = box
-                 IsFixedSize = true
-             })
-
-    static member Default = Canvas.DefaultLazy.Force()
+        {
+            Children = []
+            Box = box
+            IsFixedSize = true
+        }
 
 /// Canvas - panel, where children layout by the absolute coordinated from canvas borders
 [<RequireQualifiedAccess>]

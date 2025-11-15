@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <Compile Include="Utils.fs" />
+        <Compile Include="SequentialIdGenerator.fs" />
         <Compile Include="Constants.fs" />
         <Compile Include="Field.fs" />
         <Compile Include="Icons.fs" />
@@ -23,6 +24,8 @@
         <Compile Include="Time.fs" />
         <Compile Include="TickEngine.fs" />
         <Compile Include="UserInput.fs" />
+        <Compile Include="Services\UIStateService.fs" />
+        <Compile Include="Services\StateService.fs" />
         <Compile Include="RenderBase.fs" />
         <Compile Include="Elements\Base\Elem.fs" />
         <Compile Include="Elements\Base\Label.fs" />
@@ -30,6 +33,7 @@
         <Compile Include="Elements\Base\ImageSource.fs" />
         <Compile Include="Elements\Panels\Canvas.fs" />
         <Compile Include="Elements\Panels\StackPanel.fs" />
+        <Compile Include="Elements\Buttons\Button.fs" />
         <Compile Include="Elements\ImageBox.fs" />
         <Compile Include="Control.fs" />
         <Compile Include="Config.fs" />
