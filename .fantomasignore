@@ -6,3 +6,4 @@ setup/
 *.Tests/
 *.Examples/
 NRayUI/Icons.fs
+.github/

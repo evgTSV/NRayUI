@@ -157,9 +157,7 @@ let workflows = [
     
     workflow "release" [
         name "Release"
-        onPushTo "main"
         onPushTags "v*"
-        onPullRequestTo "main"
         onSchedule "0 0 * * 6"
         job "release" [
             writeContentPermissions
