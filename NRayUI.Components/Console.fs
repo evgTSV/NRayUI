@@ -1,4 +1,4 @@
-﻿namespace NRayUI.Components
+namespace NRayUI.Components
 
 type ConsoleModel = {
     Input: string
