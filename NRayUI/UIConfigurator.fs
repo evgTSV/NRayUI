@@ -356,7 +356,7 @@ module ImageBoxSet =
 
 [<RequireQualifiedAccess>]
 module ButtonSet =
-    
+
     let onClick (action: unit -> unit) (button: Button) = {
         button with
             OnClick = action

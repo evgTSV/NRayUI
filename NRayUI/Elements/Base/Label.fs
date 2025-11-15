@@ -66,11 +66,10 @@ type Label = {
         let layout = this.Box.Layout
         Math.Max(layout.Padding.Top + layout.Height + layout.Padding.Bottom, this.Text.Height)
 
-    static member Default =
-        {
-            Box = Box.Default
-            Text = Text.Default
-        }
+    static member Default = {
+        Box = Box.Default
+        Text = Text.Default
+    }
 
 [<RequireQualifiedAccess>]
 module Label =

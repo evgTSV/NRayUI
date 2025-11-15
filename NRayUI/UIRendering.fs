@@ -24,7 +24,7 @@ let inline renderPrologue (ctx: RenderingContext) =
     ClearBackground Color.RayWhite
 
 let inline renderEpilogue () =
-    SequentialIdGenerator.reset()
+    SequentialIdGenerator.reset ()
     EndBlendMode()
     EndMode2D()
     EndDrawing()

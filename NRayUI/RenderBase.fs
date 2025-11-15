@@ -48,16 +48,17 @@ and UpdateContext = {
 
     member this.GetRequiredViewModel<'T>() =
         (this :> IServiceProvider).GetRequiredService<'T>()
-        
+
     member this.UseState<'T>(key: string, initialValue: 'T) =
         let stateManager = this.GetRequiredService<IStateManager>()
         stateManager.UseState(key, initialValue)
-    
+
     member this.UseState<'T>(initialValue: 'T) =
-        let key = 
+        let key =
             let stackTrace = System.Diagnostics.StackTrace(true)
             let frame = stackTrace.GetFrame(1)
             $"{frame.GetMethod().Name}_{typeof<'T>.Name}"
+
         this.UseState(key, initialValue)
 
 type RenderAction = RenderingContext -> unit

@@ -79,5 +79,4 @@ module UserInput =
         Time = time
     }
 
-    let getMousePosition() =
-        Input.GetMousePosition()
+    let getMousePosition () = Input.GetMousePosition()

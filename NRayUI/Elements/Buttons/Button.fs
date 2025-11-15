@@ -16,46 +16,44 @@ type Button = {
     OnClick: unit -> unit
     Label: Label
 } with
-    
+
     interface IElem with
         member this.Render(ctx) =
             ctx |> (this.Label :> IElem).Render
-            
+
             let stateService = ctx.ServiceProvider.GetRequiredService<UIStateService>()
+
             let bounds =
-                Rectangle(
-                    ctx.CurrentPosition.X,
-                    ctx.CurrentPosition.Y,
-                    this.Width,
-                    this.Height
-                )
+                Rectangle(ctx.CurrentPosition.X, ctx.CurrentPosition.Y, this.Width, this.Height)
+
             stateService.SetButtonState(this.Id, { Bounds = bounds })
 
-        member this.Update ctx =    
+        member this.Update ctx =
             let stateService = ctx.ServiceProvider.GetRequiredService<UIStateService>()
+
             match stateService.TryGetButtonState(this.Id) with
             | Some state ->
                 let bounds = state.Bounds
-                
-                if 
+
+                if
                     ctx.Input
                     |> Array.exists (function
-                        | MouseClicked (key, pos)
-                            when key = MouseButton.Left && bounds.Contains(pos) ->
-                                true
+                        | MouseClicked(key, pos) when key = MouseButton.Left && bounds.Contains(pos) ->
+                            true
                         | _ -> false)
-                then this.OnClick()
-                
+                then
+                    this.OnClick()
+
                 this
             | None -> this
 
     interface ILayoutProvider with
-        member this.GetLayout =
-            (this.Label :> ILayoutProvider).GetLayout
+        member this.GetLayout = (this.Label :> ILayoutProvider).GetLayout
 
     interface IWithLayout<Button> with
         member this.SetLayout(layout) = {
-            this with Button.Label = (this.Label :> IWithLayout<Label>).SetLayout(layout)
+            this with
+                Button.Label = (this.Label :> IWithLayout<Label>).SetLayout(layout)
         }
 
     interface IBoxProvider with
@@ -63,7 +61,8 @@ type Button = {
 
     interface IWithBox<Button> with
         member this.SetBox(box) = {
-            this with Label = (this.Label :> IWithBox<Label>).SetBox(box)
+            this with
+                Label = (this.Label :> IWithBox<Label>).SetBox(box)
         }
 
     interface ITextProvider with
@@ -71,20 +70,20 @@ type Button = {
 
     interface IWithText<Button> with
         member this.SetText(text) = {
-            this with Label = (this.Label :> IWithText<Label>).SetText(text)
+            this with
+                Label = (this.Label :> IWithText<Label>).SetText(text)
         }
-        
-    member this.Width =
-        this.Label.Width
-    
-    member this.Height =
-        this.Label.Height
+
+    member this.Width = this.Label.Width
+
+    member this.Height = this.Label.Height
 
     static member Default =
         let label = Label.Default
+
         {
-            Id = SequentialIdGenerator.getNextId()
-            OnClick = (fun() -> ())
+            Id = SequentialIdGenerator.getNextId ()
+            OnClick = (fun () -> ())
             Label = label
         }
 

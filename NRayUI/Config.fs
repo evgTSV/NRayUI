@@ -50,9 +50,7 @@ type UIBuilder() =
     }
 
     let services =
-        ServiceCollection()
-            .AddScoped<UIStateService>()
-            .AddScoped<IStateManager, StateManager>()
+        ServiceCollection().AddScoped<UIStateService>().AddScoped<IStateManager, StateManager>()
 
     member _.Services = services
 
