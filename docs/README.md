@@ -85,7 +85,7 @@ let builder = UIBuilder()
 %builder
     .WithWindow({
         Title = "NRayUI example"
-        WindowSizePx = (800, 800)
+        WindowSizePx = (580, 720)
     })
     
 let app = builder.Build()
