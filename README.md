@@ -8,13 +8,21 @@ NRayUI - free library for creating UI for games with declarative style.
 
 Implementation Status
 ---------------------
-Some of the UI features have been implemented, but the 'updating step' API hasn't implemented, yet.
+Some of the UI features have been implemented
 
 Installation
 ------------
 Download the latest distribution for your platform from **Nuget**.
 
 For a development build, browse from sources.
+
+## Resources
+
+- 💨 [Getting started](https://github.com/evgTSV/NRayUI/tree/main/docs)
+
+- 📚 [Documentation](https://github.com/evgTSV/NRayUI/tree/main/docs)
+
+- 📓 [Examples](https://github.com/evgTSV/NRayUI/tree/main/NRayUI.Examples)
 
 Requirements
 ------------
