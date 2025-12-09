@@ -12,8 +12,8 @@ Interfaces are constructed from nested components, where each component can cont
 ### 2. Modifiers
 Element properties are configured through modifier chains, ensuring flexibility and code readability.
 
-### 3. Typed Modifier Sets
-Different element types have their own specific modifier sets (Layout, Box, StackPanel, etc.)
+### 3. Typed Modifier's setters
+Different element types have their own specific modifier's setters (Layout, Box, StackPanel, etc.)
 
 To change properties of control use this tip: `Control's name`+`Set` (e.g `StackPanel.orientation`)
 

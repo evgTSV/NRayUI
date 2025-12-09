@@ -24,6 +24,8 @@ For a development build, browse from sources.
 
 - 📓 [Examples](https://github.com/evgTSV/NRayUI/tree/main/NRayUI.Examples)
 
+- 🕹️ [Video demo](https://www.youtube.com/watch?v=trzFjI_Zo4k)
+
 Requirements
 ------------
 
