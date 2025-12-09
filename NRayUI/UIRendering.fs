@@ -85,13 +85,13 @@ let startRendering (app: UIApp) (view: View<'a>) =
         ScissorRegion = None
         IsDebugMode = false
         Resources = res
-        ServiceProvider = app.ServiceProvider // TODO: Use different scopes for render and update
+        ServiceProvider = app.ServiceProvider
     }
 
     let uCtx = {
         Input = [||]
         Resources = res
-        ServiceProvider = app.ServiceProvider // TODO: Use different scopes for render and update
+        ServiceProvider = app.ServiceProvider
         TickEngine = TickEngine.Create(FrameTime.Now())
     }
 

@@ -1,4 +1,4 @@
-O21 [![Status Enfer][status-enfer]][andivionian-status-classifier]
+NRayUI [![Status Enfer][status-enfer]][andivionian-status-classifier]
 ===
 
 ![Logo](images/nrayui_logo_250x250.png)

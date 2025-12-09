@@ -17,9 +17,5 @@ let builder = UIBuilder()
     
 let app = builder.Build()
 
-// Uncomment one view
-// gameField
-// inputViewer
-// myStackPanel
-counterView
+inputViewer
 |> startRendering app
