@@ -38,7 +38,7 @@ jobs:
     - name: Publish to NuGet
       run: dotnet nuget push nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
         body: Automatic release for NRayUI v${{ steps.version.outputs.version }}
         files: nupkg/*.nupkg
